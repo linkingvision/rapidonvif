@@ -7,8 +7,6 @@ ProfileS:
 ProfileG:
 	TODO Hikvision
 
-
-
 Windows: Please use VS2010
 Linux: TODO wirte the Makefile
 
