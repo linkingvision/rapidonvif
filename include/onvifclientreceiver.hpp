@@ -39,7 +39,7 @@ inline OnvifClientReceiver::~OnvifClientReceiver()
 
 }
 
-int OnvifClientReceiver::GetReceivers(_trv__GetReceiversResponse & receivers)
+inline int OnvifClientReceiver::GetReceivers(_trv__GetReceiversResponse & receivers)
 {
 	_trv__GetReceivers req;
 	string strUrl;
