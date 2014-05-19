@@ -47,7 +47,7 @@ inline int OnvifClientReceiver::GetReceivers(_trv__GetReceiversResponse & receiv
 	string strPass;
 	
 	if (m_Device.GetUserPasswd(strUser, strPass) == false 
-		|| m_Device.GetMediaUrl(strUrl) == false)
+		|| m_Device.GetReceiverUrl(strUrl) == false)
 	{
 		return SOAP_ERR;
 	}

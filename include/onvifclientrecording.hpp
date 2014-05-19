@@ -47,7 +47,7 @@ inline int OnvifClientRecording::GetRecordings(_trc__GetRecordingsResponse &reco
 	string strPass;
 	
 	if (m_Device.GetUserPasswd(strUser, strPass) == false 
-		|| m_Device.GetMediaUrl(strUrl) == false)
+		|| m_Device.GetRecordingUrl(strUrl) == false)
 	{
 		return SOAP_ERR;
 	}

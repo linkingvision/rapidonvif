@@ -22,6 +22,21 @@ int _tmain(int argc, _TCHAR* argv[])
 	OnvifClientMedia media(onvifDevice);
 	_trt__GetProfilesResponse profiles;
 	media.GetProfiles(profiles);
+	
+	/* Recording */
+	OnvifClientRecording onvifRecording(onvifDevice);
+	_trc__GetRecordingsResponse recordings;
+	onvifRecording.GetRecordings(recordings);
+	
+	/* Onvif Receiver */
+	OnvifClientReceiver onvifReceiver(onvifDevice);
+	_trv__GetReceiversResponse receivers;
+	onvifReceiver.GetReceivers(receivers);
+	
+	string replayUrl;
+	OnvifClientReplay onvifRelay(onvifDevice);
+	onvifRelay.GetReplayUri("RecordingToken001", replayUrl);
+	printf("Relay Url %s\n", replayUrl.c_str());
 
 	OnvifClientEvent onvifEvent(onvifDevice);
 
@@ -34,14 +49,22 @@ int _tmain(int argc, _TCHAR* argv[])
         printf("OnvifClientEventNotify::soap_bind Binding on %d port failed", 9090);
         return 0;
     }
+	int timeStart = time(NULL);
+	int currentTime = 0;
 
 	//Loop to recevie the event
 	while(1)
 	{
-        if( (ret = soap_accept(&notify)) == SOAP_INVALID_SOCKET) {
-            printf("soap_accept accepting failed");
-            return 0;
-        }
+		currentTime = time(NULL);
+		if (currentTime - timeStart > 58)
+		{
+			onvifEvent.Renew();
+		}
+		printf("soap_accept accepting\n");
+		if( (ret = soap_accept(&notify)) == SOAP_INVALID_SOCKET) {
+			printf("soap_accept accepting timeout\n");
+			continue;
+		}
 
         if ( (soap_begin_serve(&notify)) != SOAP_OK) {
             printf("soap_begin_serve serve %d failed", ret);

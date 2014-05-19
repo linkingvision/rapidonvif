@@ -28,15 +28,18 @@ public:
 	//TODO add callback to here
 	virtual	int Notify(_wsnt__Notify *wsnt__Notify)
 	{
+		printf("\nMessage size %d\n", wsnt__Notify->NotificationMessage.size());
 		if(wsnt__Notify->NotificationMessage.size() > 0 )
 		{
 			m_EventCnt ++;
-			printf("\nONVIF CPP Lib Event %d __mixed: %s\n", m_EventCnt, 
+			printf("\nONVIF CPP Lib Event %d host %s __mixed: %s\n", m_EventCnt, host,
 					wsnt__Notify->NotificationMessage[0]->Topic->__mixed);
 			printf("\t__any: %s\n", wsnt__Notify->NotificationMessage[0]->Topic->__any);
 			printf("\t__anyAttribute: %s\n", wsnt__Notify->NotificationMessage[0]->Topic->__anyAttribute);
 			printf("\tDialect: %s\n", wsnt__Notify->NotificationMessage[0]->Topic->Dialect.c_str());
+			printf("\tMessage %s\n", wsnt__Notify->NotificationMessage[0]->Message.__any);
 		}
+		
 		return SOAP_OK;	
 	}
 	
@@ -129,10 +132,12 @@ public:
 public:
 	/* Add function to here */
 	int Subscribe(string &notifyUrl);
-	int UnSubscribe(string &notifyUrl);
+	int UnSubscribe();
+	int Renew();
 				
 private:
 	OnvifClientDevice &m_Device;
+	string m_RenewEndpoint;
 
 };
 
@@ -154,7 +159,7 @@ inline int OnvifClientEvent::Subscribe(string &notifyUrl)
 	string strPass;
 	_wsnt__Subscribe subscribe;
 	_wsnt__SubscribeResponse  subscribeResponse;
-	string strTimeOut = "PT24H";
+	string strTimeOut = "PT60S";
 	
 	if (m_Device.GetUserPasswd(strUser, strPass) == false 
 		|| m_Device.GetEventUrl(strUrl) == false)
@@ -176,13 +181,74 @@ inline int OnvifClientEvent::Subscribe(string &notifyUrl)
 	soap_wsa_add_FaultTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
 
 		
-	return eventBinding.Subscribe(&subscribe,&subscribeResponse);
+	int ret = eventBinding.Subscribe(&subscribe,&subscribeResponse);
+	if (ret == SOAP_OK)
+	{
+		m_RenewEndpoint = subscribeResponse.SubscriptionReference.Address;
+		printf("SubscriptionReference %s\n", m_RenewEndpoint.c_str());
+	}
+	return ret;
 }
 
-int OnvifClientEvent::UnSubscribe(string &notifyUrl)
+int OnvifClientEvent::UnSubscribe()
 {
-	return SOAP_OK;
+	string strUrl;
+	string strUser;
+	string strPass;
+	_wsnt__Unsubscribe unsubscribe;
+	_wsnt__UnsubscribeResponse  unsubscribeResponse;
+	
+	if (m_Device.GetUserPasswd(strUser, strPass) == false 
+		|| m_Device.GetEventUrl(strUrl) == false)
+	{
+		return SOAP_ERR;
+	}
+	
+	PullPointSubscriptionBindingProxy  eventBinding(SOAP_C_UTFSTRING);
+	eventBinding.soap_endpoint =  strUrl.c_str();
+	
+	soap_wsse_add_Security(&eventBinding);
+	soap_wsse_add_UsernameTokenDigest(&eventBinding, "Id", 
+		strUser.c_str() , strPass.c_str());
+	soap_wsa_add_From(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
+	soap_wsa_add_ReplyTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
+	soap_wsa_add_FaultTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
+	eventBinding.header->wsa5__To = const_cast<char *>(m_RenewEndpoint.c_str());
+		
+	return eventBinding.Unsubscribe(&unsubscribe,&unsubscribeResponse);
 
+}
+int OnvifClientEvent::Renew()
+{
+	string strUrl;
+	string strUser;
+	string strPass;
+	_wsnt__Renew req;
+	_wsnt__RenewResponse  resp;
+	string strTimeOut = "PT60S";
+	
+	if (m_Device.GetUserPasswd(strUser, strPass) == false 
+		|| m_Device.GetEventUrl(strUrl) == false)
+	{
+		return SOAP_ERR;
+	}
+	
+	req.TerminationTime = &strTimeOut;
+	
+	PullPointSubscriptionBindingProxy  eventBinding(SOAP_C_UTFSTRING);
+	eventBinding.soap_endpoint =  strUrl.c_str();
+	
+	soap_wsse_add_Security(&eventBinding);
+	soap_wsse_add_UsernameTokenDigest(&eventBinding, "Id", 
+		strUser.c_str() , strPass.c_str());
+	soap_wsa_add_From(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
+	soap_wsa_add_ReplyTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
+	soap_wsa_add_FaultTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
+	eventBinding.header->wsa5__To = const_cast<char *>(m_RenewEndpoint.c_str());
+
+		
+	int ret = eventBinding.Renew(&req,&resp);
+	return ret;
 }
 
 
