@@ -138,11 +138,12 @@ public:
 private:
 	OnvifClientDevice &m_Device;
 	string m_RenewEndpoint;
+	PullPointSubscriptionBindingProxy  eventBinding;
 
 };
 
 inline OnvifClientEvent::OnvifClientEvent(OnvifClientDevice &device)
-: m_Device(device)
+: m_Device(device), eventBinding(SOAP_C_UTFSTRING)
 {
 
 }
@@ -170,7 +171,6 @@ inline int OnvifClientEvent::Subscribe(string &notifyUrl)
 	subscribe.ConsumerReference.Address = (char *)(notifyUrl.c_str());
 	subscribe.InitialTerminationTime = &strTimeOut;
 	
-	PullPointSubscriptionBindingProxy  eventBinding(SOAP_C_UTFSTRING);
 	eventBinding.soap_endpoint =  strUrl.c_str();
 	
 	soap_wsse_add_Security(&eventBinding);
@@ -204,7 +204,6 @@ int OnvifClientEvent::UnSubscribe()
 		return SOAP_ERR;
 	}
 	
-	PullPointSubscriptionBindingProxy  eventBinding(SOAP_C_UTFSTRING);
 	eventBinding.soap_endpoint =  strUrl.c_str();
 	
 	soap_wsse_add_Security(&eventBinding);
@@ -235,15 +234,14 @@ int OnvifClientEvent::Renew()
 	
 	req.TerminationTime = &strTimeOut;
 	
-	PullPointSubscriptionBindingProxy  eventBinding(SOAP_C_UTFSTRING);
 	eventBinding.soap_endpoint =  strUrl.c_str();
 	
 	soap_wsse_add_Security(&eventBinding);
 	soap_wsse_add_UsernameTokenDigest(&eventBinding, "Id", 
 		strUser.c_str() , strPass.c_str());
-	soap_wsa_add_From(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
+	//soap_wsa_add_From(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
 	soap_wsa_add_ReplyTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
-	soap_wsa_add_FaultTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
+	//soap_wsa_add_FaultTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
 	eventBinding.header->wsa5__To = const_cast<char *>(m_RenewEndpoint.c_str());
 
 		

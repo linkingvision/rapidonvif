@@ -25,11 +25,12 @@ public:
 				
 private:
 	OnvifClientDevice &m_Device;
+	ReceiverBindingProxy  receiverProxy;
 
 };
 
 inline OnvifClientReceiver::OnvifClientReceiver(OnvifClientDevice &device)
-: m_Device(device)
+: m_Device(device), receiverProxy(SOAP_C_UTFSTRING)
 {
 
 }
@@ -51,8 +52,7 @@ inline int OnvifClientReceiver::GetReceivers(_trv__GetReceiversResponse & receiv
 	{
 		return SOAP_ERR;
 	}
-	
-	ReceiverBindingProxy  receiverProxy(SOAP_C_UTFSTRING);
+
 	receiverProxy.soap_endpoint =  strUrl.c_str();
 	
 	soap_wsse_add_Security(&receiverProxy);

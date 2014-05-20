@@ -25,11 +25,12 @@ public:
 				
 private:
 	OnvifClientDevice &m_Device;
+	RecordingBindingProxy  recordingProxy;
 
 };
 
 inline OnvifClientRecording::OnvifClientRecording(OnvifClientDevice &device)
-: m_Device(device)
+: m_Device(device), recordingProxy(SOAP_C_UTFSTRING)
 {
 
 }
@@ -52,7 +53,6 @@ inline int OnvifClientRecording::GetRecordings(_trc__GetRecordingsResponse &reco
 		return SOAP_ERR;
 	}
 	
-	RecordingBindingProxy  recordingProxy(SOAP_C_UTFSTRING);
 	recordingProxy.soap_endpoint =  strUrl.c_str();
 	
 	soap_wsse_add_Security(&recordingProxy);

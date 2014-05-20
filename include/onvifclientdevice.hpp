@@ -70,11 +70,12 @@ private:
 	string m_strSearch;
 	string m_strReplay;
 	string m_strEvent;
+	DeviceBindingProxy deviceBindProxy;
 };
 
 inline OnvifClientDevice::OnvifClientDevice(string &strUrl, string &strUser, string &strPass)
 :m_strUrl(strUrl), m_strUser(strUser), 
- m_strPass(strPass), m_hasGetCap(false)
+ m_strPass(strPass), m_hasGetCap(false), deviceBindProxy(SOAP_C_UTFSTRING)
 {
 	m_hasMedia = false;
 	m_hasPTZ = false;
@@ -190,7 +191,6 @@ int OnvifClientDevice::GetCapabilities()
 
 inline int OnvifClientDevice::GetCapabilities(_tds__GetCapabilitiesResponse &cap)
 {
-	DeviceBindingProxy deviceBindProxy(SOAP_C_UTFSTRING);
 	deviceBindProxy.soap_endpoint =  m_strUrl.c_str();
 	
 	soap_wsse_add_Security(&deviceBindProxy);

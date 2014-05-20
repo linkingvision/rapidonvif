@@ -24,11 +24,12 @@ public:
 				
 private:
 	OnvifClientDevice &m_Device;
+	MediaBindingProxy  mediaProxy;
 
 };
 
 inline OnvifClientMedia::OnvifClientMedia(OnvifClientDevice &device)
-: m_Device(device)
+: m_Device(device), mediaProxy(SOAP_C_UTFSTRING)
 {
 
 }
@@ -51,7 +52,6 @@ inline int OnvifClientMedia::GetProfiles(_trt__GetProfilesResponse &profiles)
 		return SOAP_ERR;
 	}
 	
-	MediaBindingProxy  mediaProxy(SOAP_C_UTFSTRING);
 	mediaProxy.soap_endpoint =  strUrl.c_str();
 	
 	soap_wsse_add_Security(&mediaProxy);

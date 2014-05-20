@@ -25,11 +25,12 @@ public:
 				
 private:
 	OnvifClientDevice &m_Device;
+	ReplayBindingProxy  replayProxy;
 
 };
 
 inline OnvifClientReplay::OnvifClientReplay(OnvifClientDevice &device)
-: m_Device(device)
+: m_Device(device), replayProxy(SOAP_C_UTFSTRING)
 {
 
 }
@@ -59,7 +60,6 @@ inline int OnvifClientReplay::GetReplayUri(string recordingToken, string  &repla
 		return SOAP_ERR;
 	}
 	
-	ReplayBindingProxy  replayProxy(SOAP_C_UTFSTRING);
 	replayProxy.soap_endpoint =  strUrl.c_str();
 	
 	soap_wsse_add_Security(&replayProxy);
