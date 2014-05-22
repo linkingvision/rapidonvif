@@ -41,7 +41,6 @@ int _tmain(int argc, _TCHAR* argv[])
         printf("OnvifClientEventNotify::soap_bind Binding on %d port failed", 9090);
         return 0;
     }
-
 	//Loop to recevie the event
 	while(1)
 	{
