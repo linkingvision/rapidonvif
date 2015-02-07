@@ -1,6 +1,11 @@
 #ifndef __ONVIF_CLIENT__
 #define __ONVIF_CLIENT__
 
+#ifndef TRUE
+#define TRUE 1
+#define FALSE 0
+#endif
+
 #include "onvifclientdevice.hpp"
 #include "onvifclientevent.hpp"
 #include "onvifclientimaging.hpp"
