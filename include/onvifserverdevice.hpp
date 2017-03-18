@@ -1,3 +1,26 @@
+/** <!--
+ *
+ *  Copyright (C) 2017 veyesys support@veyesys.com
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  If you would like this software to be made available to you under an 
+ *  alternate commercial license please email support@veyesys.com 
+ *  for more information.
+ *
+ * -->
+ */
 #ifndef __ONVIF_SERVER_DEVICE__
 #define __ONVIF_SERVER_DEVICE__
 
@@ -7,6 +30,7 @@
 #include <list>
 
 #include "soapStub.h"
+#include "soapH.h"
 #include "soapDeviceBindingService.h"
 #include "wsseapi.h"
 
@@ -15,7 +39,7 @@ using namespace std;
 class OnvifServerDevice : public DeviceBindingService
 {
 public:
-    OnvifServerDevice(struct soap * pData, string strDeviceEndpoint, 
+    OnvifServerDevice(string strDeviceEndpoint, 
 		string strMediaEndpoint, string strReceiverEndpoint, 
 		string strEventEndpoint);
     ~OnvifServerDevice();
@@ -153,10 +177,13 @@ public:
 	/// Web service operation 'GetScopes' (returns error code or SOAP_OK)
 	virtual	int GetScopes(_tds__GetScopes *tds__GetScopes, _tds__GetScopesResponse *tds__GetScopesResponse) 
 	{
+
 		for( std::vector<std::string>::const_iterator it = m_strScopes.begin();
 		 it != m_strScopes.end(); ++it ) 
 		 {
-				tds__GetScopesResponse->Scopes.push_back( soap_new_tt__Scope(m_pSoap) );
+#if 1
+				tds__GetScopesResponse->Scopes.push_back(soap_new_tt__Scope(m_pSoap, 1));
+#endif
 				tds__GetScopesResponse->Scopes.back()->ScopeDef = tt__ScopeDefinition__Fixed;
 				tds__GetScopesResponse->Scopes.back()->ScopeItem = *it;
 		}
@@ -654,7 +681,7 @@ public:
 	virtual	int StartSystemRestore_(_tds__StartSystemRestore *tds__StartSystemRestore, _tds__StartSystemRestoreResponse *tds__StartSystemRestoreResponse) {return SOAP_OK;};
 
 	
-private:
+public:
 	struct soap * m_pSoap;
 	string m_strDeviceEndpoint; 
 	string m_strMediaEndpoint; 
@@ -663,9 +690,9 @@ private:
 	std::vector<std::string> m_strScopes;
 };
 
-inline OnvifServerDevice::OnvifServerDevice(struct soap * pData, string strDeviceEndpoint, 
+inline OnvifServerDevice::OnvifServerDevice(string strDeviceEndpoint, 
 		string strMediaEndpoint, string strReceiverEndpoint, string strEventEndpoint)
-:DeviceBindingService(pData), m_pSoap(pData), m_strDeviceEndpoint(strDeviceEndpoint), 
+:DeviceBindingService(), m_pSoap(this), m_strDeviceEndpoint(strDeviceEndpoint), 
 m_strMediaEndpoint(strMediaEndpoint), m_strReceiverEndpoint(strReceiverEndpoint), 
 m_strEventEndpoint(strEventEndpoint)
 {

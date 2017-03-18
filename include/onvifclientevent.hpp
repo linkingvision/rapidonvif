@@ -1,3 +1,26 @@
+/** <!--
+ *
+ *  Copyright (C) 2017 veyesys support@veyesys.com
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  If you would like this software to be made available to you under an 
+ *  alternate commercial license please email support@veyesys.com 
+ *  for more information.
+ *
+ * -->
+ */
 #ifndef __ONVIF_CLIENT_EVENT__
 #define __ONVIF_CLIENT_EVENT__
 
@@ -10,118 +33,82 @@
 #include "soapStub.h"
 #include "soapPullPointSubscriptionBindingProxy.h"
 #include "soapPullPointSubscriptionBindingService.h"
+#include "soapNotificationProducerBindingProxy.h"
+#include "soapPullPointBindingProxy.h"
+#include "soapSubscriptionManagerBindingProxy.h"
+#include "soapNotificationConsumerBindingService.h"
+#include "soapPullPointBindingService.h"
 #include "wsseapi.h"
 #include "wsaapi.h"
 
 
 using namespace std;
 
-class OnvifClientEventNotify : public PullPointSubscriptionBindingService
+class OnvifEvent
 {
 public:
-	OnvifClientEventNotify(struct soap* pData)
-	: m_EventCnt(0), PullPointSubscriptionBindingService(*pData)
+	string name;
+	string ip;
+	string event;
+	string desc;
+	string time;
+};
+
+typedef bool (*OnvifEventCallback)(void* pData, OnvifEvent& event);
+
+class OnvifClientEventNotify : public PullPointBindingService
+{
+public:
+	OnvifClientEventNotify()
+	: m_EventCnt(0), PullPointBindingService(), 
+	m_pData(NULL), m_eventHandler(NULL)
 	{
 	
 	}
 public:
-	//TODO add callback to here
-	virtual	int Notify(_wsnt__Notify *wsnt__Notify)
+	bool SetCallback(void * pData, OnvifEventCallback callback)
 	{
-		printf("\nMessage size %d\n", wsnt__Notify->NotificationMessage.size());
+		m_pData = pData;
+		m_eventHandler = callback;
+		return true;
+	}
+	virtual int Notify(_wsnt__Notify *wsnt__Notify)
+	{
+		OnvifEvent event;
+		//printf("\nMessage size %d\n", wsnt__Notify->NotificationMessage.size());
 		if(wsnt__Notify->NotificationMessage.size() > 0 )
 		{
 			m_EventCnt ++;
-			printf("\nONVIF CPP Lib Event %d host %s __mixed: %s\n", m_EventCnt, host,
-					wsnt__Notify->NotificationMessage[0]->Topic->__mixed);
-			printf("\t__any: %s\n", wsnt__Notify->NotificationMessage[0]->Topic->__any);
-			printf("\t__anyAttribute: %s\n", wsnt__Notify->NotificationMessage[0]->Topic->__anyAttribute);
-			printf("\tDialect: %s\n", wsnt__Notify->NotificationMessage[0]->Topic->Dialect.c_str());
-			printf("\tMessage %s\n", wsnt__Notify->NotificationMessage[0]->Message.__any);
+			//printf("\nONVIF CPP Lib Event %d host %s __mixed: %s\n", m_EventCnt, host,
+			//		wsnt__Notify->NotificationMessage[0]->Topic->__mixed);
+			//printf("\t__any: %s\n", wsnt__Notify->NotificationMessage[0]->Topic->__any);
+			//printf("\t__item: %s\n", wsnt__Notify->NotificationMessage[0]->Topic->__item);
+			//printf("\t__anyAttribute: %s\n", wsnt__Notify->NotificationMessage[0]->Topic->__anyAttribute);
+			//printf("\tDialect: %s\n", wsnt__Notify->NotificationMessage[0]->Topic->Dialect.c_str());
+			//printf("\tMessage %s\n", wsnt__Notify->NotificationMessage[0]->Message.__any);
+			event.ip =  host;
+			event.event = wsnt__Notify->NotificationMessage[0]->Topic->__item;
+			event.desc = wsnt__Notify->NotificationMessage[0]->Message.__any;
+			//printf("\nMessage event %s\n", event.event.c_str());
+			event.desc = "";
+			if (m_eventHandler)
+			{
+				m_eventHandler(m_pData, event);
+			}
 		}
-		
 		return SOAP_OK;	
 	}
 	
 public:
-	virtual	PullPointSubscriptionBindingService *copy()
+	virtual PullPointBindingService *copy()
 	{
 		return NULL;
 	}
-	/// Web service operation 'PullMessages' (returns error code or SOAP_OK)
-	virtual	int PullMessages(_tev__PullMessages *tev__PullMessages, _tev__PullMessagesResponse *tev__PullMessagesResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'Seek' (returns error code or SOAP_OK)
-	virtual	int Seek(_tev__Seek *tev__Seek, _tev__SeekResponse *tev__SeekResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'SetSynchronizationPoint' (returns error code or SOAP_OK)
-	virtual	int SetSynchronizationPoint(_tev__SetSynchronizationPoint *tev__SetSynchronizationPoint, _tev__SetSynchronizationPointResponse *tev__SetSynchronizationPointResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'GetServiceCapabilities' (returns error code or SOAP_OK)
-	virtual	int GetServiceCapabilities(_tev__GetServiceCapabilities *tev__GetServiceCapabilities, _tev__GetServiceCapabilitiesResponse *tev__GetServiceCapabilitiesResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'CreatePullPointSubscription' (returns error code or SOAP_OK)
-	virtual	int CreatePullPointSubscription(_tev__CreatePullPointSubscription *tev__CreatePullPointSubscription, _tev__CreatePullPointSubscriptionResponse *tev__CreatePullPointSubscriptionResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'GetEventProperties' (returns error code or SOAP_OK)
-	virtual	int GetEventProperties(_tev__GetEventProperties *tev__GetEventProperties, _tev__GetEventPropertiesResponse *tev__GetEventPropertiesResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'Renew' (returns error code or SOAP_OK)
-	virtual	int Renew(_wsnt__Renew *wsnt__Renew, _wsnt__RenewResponse *wsnt__RenewResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'Unsubscribe' (returns error code or SOAP_OK)
-	virtual	int Unsubscribe(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse *wsnt__UnsubscribeResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'Subscribe' (returns error code or SOAP_OK)
-	virtual	int Subscribe(_wsnt__Subscribe *wsnt__Subscribe, _wsnt__SubscribeResponse *wsnt__SubscribeResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'GetCurrentMessage' (returns error code or SOAP_OK)
-	virtual	int GetCurrentMessage(_wsnt__GetCurrentMessage *wsnt__GetCurrentMessage, _wsnt__GetCurrentMessageResponse *wsnt__GetCurrentMessageResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'GetMessages' (returns error code or SOAP_OK)
-	virtual	int GetMessages(_wsnt__GetMessages *wsnt__GetMessages, _wsnt__GetMessagesResponse *wsnt__GetMessagesResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'DestroyPullPoint' (returns error code or SOAP_OK)
-	virtual	int DestroyPullPoint(_wsnt__DestroyPullPoint *wsnt__DestroyPullPoint, _wsnt__DestroyPullPointResponse *wsnt__DestroyPullPointResponse) 
-	{return SOAP_OK;}
-
-	/// Web service one-way operation 'Notify' (return error code, SOAP_OK (no response), or send_Notify_empty_response())
-	virtual	int Notify_(_wsnt__Notify *wsnt__Notify) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'CreatePullPoint' (returns error code or SOAP_OK)
-	virtual	int CreatePullPoint(_wsnt__CreatePullPoint *wsnt__CreatePullPoint, _wsnt__CreatePullPointResponse *wsnt__CreatePullPointResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'Renew' (returns error code or SOAP_OK)
-	virtual	int Renew_(_wsnt__Renew *wsnt__Renew, _wsnt__RenewResponse *wsnt__RenewResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'Unsubscribe' (returns error code or SOAP_OK)
-	virtual	int Unsubscribe_(_wsnt__Unsubscribe *wsnt__Unsubscribe, _wsnt__UnsubscribeResponse *wsnt__UnsubscribeResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'PauseSubscription' (returns error code or SOAP_OK)
-	virtual	int PauseSubscription(_wsnt__PauseSubscription *wsnt__PauseSubscription, _wsnt__PauseSubscriptionResponse *wsnt__PauseSubscriptionResponse) 
-	{return SOAP_OK;}
-
-	/// Web service operation 'ResumeSubscription' (returns error code or SOAP_OK)
-	virtual	int ResumeSubscription(_wsnt__ResumeSubscription *wsnt__ResumeSubscription, _wsnt__ResumeSubscriptionResponse *wsnt__ResumeSubscriptionResponse) 
-	{return SOAP_OK;}
 	
 private:
 	int m_EventCnt;
+	void* m_pData;
+	OnvifEventCallback m_eventHandler;
 };
 
 class OnvifClientEvent
@@ -138,7 +125,8 @@ public:
 private:
 	OnvifClientDevice &m_Device;
 	string m_RenewEndpoint;
-	PullPointSubscriptionBindingProxy  eventBinding;
+	NotificationProducerBindingProxy  eventBinding;
+	SubscriptionManagerBindingProxy eventManagerBinding;
 
 };
 
@@ -160,7 +148,7 @@ inline int OnvifClientEvent::Subscribe(string &notifyUrl)
 	string strPass;
 	_wsnt__Subscribe subscribe;
 	_wsnt__SubscribeResponse  subscribeResponse;
-	string strTimeOut = "PT60S";
+	string strTimeOut = "PT600S";
 	
 	if (m_Device.GetUserPasswd(strUser, strPass) == false 
 		|| m_Device.GetEventUrl(strUrl) == false)
@@ -176,21 +164,44 @@ inline int OnvifClientEvent::Subscribe(string &notifyUrl)
 	soap_wsse_add_Security(&eventBinding);
 	soap_wsse_add_UsernameTokenDigest(&eventBinding, "Id", 
 		strUser.c_str() , strPass.c_str());
-	soap_wsa_add_From(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
-	soap_wsa_add_ReplyTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
-	soap_wsa_add_FaultTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
 
-		
+	//soap_wsa_add_From(eventBinding.soap, "http://www.w3.org/2005/08/addressing/anonymous");
+	//soap_wsa_add_ReplyTo(eventBinding.soap, "http://www.w3.org/2005/08/addressing/anonymous");
+	//soap_wsa_add_FaultTo(eventBinding.soap, "http://www.w3.org/2005/08/addressing/anonymous");
+	if (eventBinding.header->wsa5__ReplyTo == NULL)
+		eventBinding.header->wsa5__ReplyTo = new wsa5__EndpointReferenceType();
+	eventBinding.header->wsa5__ReplyTo->Address = "http://www.w3.org/2005/08/addressing/anonymous";
+	eventBinding.header->wsa5__To = const_cast<char *>(notifyUrl.c_str());
+	eventBinding.header->wsa5__Action = "http://docs.oasis-open.org/wsn/bw-2/NotificationProducer/SubscribeRequest";
+
 	int ret = eventBinding.Subscribe(&subscribe,&subscribeResponse);
 	if (ret == SOAP_OK)
 	{
-		m_RenewEndpoint = subscribeResponse.SubscriptionReference.Address;
+		if (subscribeResponse.SubscriptionReference.Address)
+		{
+			m_RenewEndpoint = subscribeResponse.SubscriptionReference.Address;
+		}else if (subscribeResponse.SubscriptionReference.__size > 0)
+		{
+			m_RenewEndpoint = subscribeResponse.SubscriptionReference.__any[0];
+			if (m_RenewEndpoint.length() > 0)
+			{
+				size_t p1 = m_RenewEndpoint.find_first_of(">");
+				size_t p2 = m_RenewEndpoint.find_last_of("<");
+				if (p1 != std::string::npos && p2 != std::string::npos)
+				{
+					std::string strTemp = m_RenewEndpoint.substr(p1 + 1, p2 - (p1 + 1));
+					m_RenewEndpoint = strTemp;
+				}
+				
+			}
+		}
 		printf("SubscriptionReference %s\n", m_RenewEndpoint.c_str());
+		
 	}
 	return ret;
 }
 
-int OnvifClientEvent::UnSubscribe()
+inline int OnvifClientEvent::UnSubscribe()
 {
 	string strUrl;
 	string strUser;
@@ -204,27 +215,33 @@ int OnvifClientEvent::UnSubscribe()
 		return SOAP_ERR;
 	}
 	
-	eventBinding.soap_endpoint =  strUrl.c_str();
+	eventManagerBinding.soap_endpoint =  strUrl.c_str();
 	
-	soap_wsse_add_Security(&eventBinding);
-	soap_wsse_add_UsernameTokenDigest(&eventBinding, "Id", 
+	soap_wsse_add_Security(&eventManagerBinding);
+	soap_wsse_add_UsernameTokenDigest(&eventManagerBinding, "Id", 
 		strUser.c_str() , strPass.c_str());
-	soap_wsa_add_From(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
-	soap_wsa_add_ReplyTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
-	soap_wsa_add_FaultTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
-	eventBinding.header->wsa5__To = const_cast<char *>(m_RenewEndpoint.c_str());
+
+	if (eventManagerBinding.header->wsa5__ReplyTo == NULL)
+		eventManagerBinding.header->wsa5__ReplyTo = new wsa5__EndpointReferenceType();
+	eventManagerBinding.header->wsa5__ReplyTo->Address = "http://www.w3.org/2005/08/addressing/anonymous";
+	eventManagerBinding.header->wsa5__To = const_cast<char *>(m_RenewEndpoint.c_str());
+
 		
-	return eventBinding.Unsubscribe(&unsubscribe,&unsubscribeResponse);
+	return eventManagerBinding.Unsubscribe(&unsubscribe,&unsubscribeResponse);
 
 }
-int OnvifClientEvent::Renew()
+inline int OnvifClientEvent::Renew()
 {
 	string strUrl;
 	string strUser;
 	string strPass;
 	_wsnt__Renew req;
 	_wsnt__RenewResponse  resp;
-	string strTimeOut = "PT60S";
+	string strTimeOut = "PT600S";
+	if (m_RenewEndpoint.c_str() == NULL)
+	{
+		return SOAP_ERR;
+	}
 	
 	if (m_Device.GetUserPasswd(strUser, strPass) == false 
 		|| m_Device.GetEventUrl(strUrl) == false)
@@ -234,18 +251,19 @@ int OnvifClientEvent::Renew()
 	
 	req.TerminationTime = &strTimeOut;
 	
-	eventBinding.soap_endpoint =  strUrl.c_str();
+	eventManagerBinding.soap_endpoint =  strUrl.c_str();
 	
-	soap_wsse_add_Security(&eventBinding);
-	soap_wsse_add_UsernameTokenDigest(&eventBinding, "Id", 
+	soap_wsse_add_Security(&eventManagerBinding);
+	soap_wsse_add_UsernameTokenDigest(&eventManagerBinding, "Id", 
 		strUser.c_str() , strPass.c_str());
-	//soap_wsa_add_From(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
-	soap_wsa_add_ReplyTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
-	//soap_wsa_add_FaultTo(&eventBinding, "http://www.w3.org/2005/08/addressing/anonymous");
-	eventBinding.header->wsa5__To = const_cast<char *>(m_RenewEndpoint.c_str());
+
+	if (eventManagerBinding.header->wsa5__ReplyTo == NULL)
+		eventManagerBinding.header->wsa5__ReplyTo = new wsa5__EndpointReferenceType();
+	eventManagerBinding.header->wsa5__ReplyTo->Address = "http://www.w3.org/2005/08/addressing/anonymous";
+	eventManagerBinding.header->wsa5__To = const_cast<char *>(m_RenewEndpoint.c_str());
 
 		
-	int ret = eventBinding.Renew(&req,&resp);
+	int ret = eventManagerBinding.Renew(&req,&resp);
 	return ret;
 }
 

@@ -1,3 +1,26 @@
+/** <!--
+ *
+ *  Copyright (C) 2017 veyesys support@veyesys.com
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  If you would like this software to be made available to you under an 
+ *  alternate commercial license please email support@veyesys.com 
+ *  for more information.
+ *
+ * -->
+ */
 #ifndef __ONVIF_CLIENT_PTZ__
 #define __ONVIF_CLIENT_PTZ__
 
@@ -10,7 +33,6 @@
 #include "soapStub.h"
 #include "soapPTZBindingProxy.h"
 #include "wsseapi.h"
-//#include "soapC.h"
 
 
 using namespace std;
@@ -31,25 +53,25 @@ public:
 public:
 	/* Add function to here */
 	//Configuration functions
-	int OnvifClientPTZ::GetConfiguration(_tptz__GetConfigurationResponse &configurationResp); // John 7/2
-	int OnvifClientPTZ::GetConfigurations(_tptz__GetConfigurationsResponse &configurationsResp);
-	int OnvifClientPTZ::GetConfigurationOptions(_tptz__GetConfigurationOptionsResponse &configOptions, string configToken); // John 7/2
-	int OnvifClientPTZ::SetConfiguration(_tptz__SetConfigurationResponse &SetConfiguration, tt__PTZConfiguration &PTZConfiguration,bool ForcePersist);
+	int GetConfiguration(_tptz__GetConfigurationResponse &configurationResp); // John 7/2
+	int GetConfigurations(_tptz__GetConfigurationsResponse &configurationsResp);
+	int GetConfigurationOptions(_tptz__GetConfigurationOptionsResponse &configOptions, string configToken); // John 7/2
+	int SetConfiguration(_tptz__SetConfigurationResponse &SetConfiguration, tt__PTZConfiguration &PTZConfiguration,bool ForcePersist);
 	//Move Functions (includes Pan, Tilt, and Zoom Moves)
-	int OnvifClientPTZ::RelativeMove(_tptz__RelativeMoveResponse &relMoveResponse, tt__PTZVector &Translation, tt__PTZSpeed &Speed, string profileToken);
-	int OnvifClientPTZ::ContinuousMove(_tptz__ContinuousMoveResponse &ContMoveResponse, tt__PTZSpeed &Speed, LONG64 &Timeout, string profileToken);
-	int OnvifClientPTZ::AbsoluteMove(_tptz__AbsoluteMoveResponse &AbsoluteMoveResponse, tt__PTZSpeed &Speed, tt__PTZVector &position, string profileToken);
-	int OnvifClientPTZ::Stop(_tptz__StopResponse &StopResponse,bool PanTilt,bool Zoom,string profileToken);
+	int RelativeMove(_tptz__RelativeMoveResponse &relMoveResponse, tt__PTZVector &Translation, tt__PTZSpeed &Speed, string profileToken);
+	int ContinuousMove(_tptz__ContinuousMoveResponse &ContMoveResponse, tt__PTZSpeed &Speed, LONG64 &Timeout, string profileToken);
+	int AbsoluteMove(_tptz__AbsoluteMoveResponse &AbsoluteMoveResponse, tt__PTZSpeed &Speed, tt__PTZVector &position, string profileToken);
+	int Stop(_tptz__StopResponse &StopResponse,bool PanTilt,bool Zoom,string profileToken);
 	//Zoom Functions
 	//TODO:
 
 	//Node, status, and service capabilities
-	int OnvifClientPTZ::GetNodes(_tptz__GetNodesResponse &GetNodesResponse);
-	int OnvifClientPTZ::GetNode(_tptz__GetNodeResponse &GetNodeResponse, string nodeToken);
-	int OnvifClientPTZ::GetStatus(_tptz__GetStatusResponse &StatusResponse,string profileToken);
-	int OnvifClientPTZ::GetServiceCapabilities(_tptz__GetServiceCapabilitiesResponse &ServiceCapResponse);
+	int GetNodes(_tptz__GetNodesResponse &GetNodesResponse);
+	int GetNode(_tptz__GetNodeResponse &GetNodeResponse, string nodeToken);
+	int GetStatus(_tptz__GetStatusResponse &StatusResponse,string profileToken);
+	int GetServiceCapabilities(_tptz__GetServiceCapabilitiesResponse &ServiceCapResponse);
 
-	int OnvifClientPTZ::Initialize();
+	int Initialize();
 
 private:
 	OnvifClientDevice &m_Device;
@@ -59,7 +81,7 @@ private:
 
 
 /* Added by John 7/2/14 */
-int OnvifClientPTZ::Initialize()
+inline int OnvifClientPTZ::Initialize()
 {
 	_tptz__GetConfigurationsResponse GetConfigsResp;
 	
@@ -84,7 +106,7 @@ int OnvifClientPTZ::Initialize()
 }
 
 
-int OnvifClientPTZ::Stop(_tptz__StopResponse &StopResponse,bool PanTilt,bool Zoom,string profileToken)
+inline int OnvifClientPTZ::Stop(_tptz__StopResponse &StopResponse,bool PanTilt,bool Zoom,string profileToken)
 {
 	string strUrl;
 	string strUser;
@@ -106,7 +128,7 @@ int OnvifClientPTZ::Stop(_tptz__StopResponse &StopResponse,bool PanTilt,bool Zoo
 	return ptzProxy.Stop(&StopReq,&StopResponse);
 }
 
-	int OnvifClientPTZ::AbsoluteMove(_tptz__AbsoluteMoveResponse &AbsoluteMoveResponse, tt__PTZSpeed &Speed, tt__PTZVector &position, string profileToken)
+inline int OnvifClientPTZ::AbsoluteMove(_tptz__AbsoluteMoveResponse &AbsoluteMoveResponse, tt__PTZSpeed &Speed, tt__PTZVector &position, string profileToken)
 {
 	if(!m_bHasAbsolutePTMove || !m_bHasAbsoluteZoomMove) {
 		cout << "Error, device does not support Absolute movement" << endl;
@@ -134,7 +156,7 @@ int OnvifClientPTZ::Stop(_tptz__StopResponse &StopResponse,bool PanTilt,bool Zoo
 
 }
 
-int OnvifClientPTZ::RelativeMove(_tptz__RelativeMoveResponse &relMoveResponse, tt__PTZVector &Translation, tt__PTZSpeed &Speed, string profileToken)
+inline int OnvifClientPTZ::RelativeMove(_tptz__RelativeMoveResponse &relMoveResponse, tt__PTZVector &Translation, tt__PTZSpeed &Speed, string profileToken)
 {
 
 	if(!m_bHasRelativePTMove || !m_bHasRelativeZoomMove) {
@@ -166,7 +188,7 @@ int OnvifClientPTZ::RelativeMove(_tptz__RelativeMoveResponse &relMoveResponse, t
 	//ptzProxy.GetNodes(&getNodesReq,&getNodesResp);
 }
 
-int OnvifClientPTZ::ContinuousMove(_tptz__ContinuousMoveResponse &ContMoveResponse, tt__PTZSpeed &Speed, LONG64 &Timeout, string profileToken)
+inline int OnvifClientPTZ::ContinuousMove(_tptz__ContinuousMoveResponse &ContMoveResponse, tt__PTZSpeed &Speed, LONG64 &Timeout, string profileToken)
 {
 	if(!m_bHasContinuousPTMove || !m_bHasContinuousZoomMove) {
 		cout << "Error, device does not support Continuous movement" << endl;
@@ -194,7 +216,7 @@ int OnvifClientPTZ::ContinuousMove(_tptz__ContinuousMoveResponse &ContMoveRespon
 	return ptzProxy.ContinuousMove(&ContMoveReq,&ContMoveResponse);
 }
 
-int OnvifClientPTZ::SetConfiguration(_tptz__SetConfigurationResponse &SetConfigurationResponse, tt__PTZConfiguration &PTZConfiguration,bool ForcePersist)
+inline int OnvifClientPTZ::SetConfiguration(_tptz__SetConfigurationResponse &SetConfigurationResponse, tt__PTZConfiguration &PTZConfiguration,bool ForcePersist)
 {
 	string strUrl;
 	string strUser;
@@ -215,7 +237,7 @@ int OnvifClientPTZ::SetConfiguration(_tptz__SetConfigurationResponse &SetConfigu
 	return ptzProxy.SetConfiguration(&SetConfigurationReq,&SetConfigurationResponse);
 }
 
-int OnvifClientPTZ::GetServiceCapabilities(_tptz__GetServiceCapabilitiesResponse &ServiceCapResponse)
+inline int OnvifClientPTZ::GetServiceCapabilities(_tptz__GetServiceCapabilitiesResponse &ServiceCapResponse)
 {
 	string strUrl;
 	string strUser;
@@ -235,7 +257,7 @@ int OnvifClientPTZ::GetServiceCapabilities(_tptz__GetServiceCapabilitiesResponse
 
 }
 
-int OnvifClientPTZ::GetStatus(_tptz__GetStatusResponse &StatusResponse,string profileToken)
+inline int OnvifClientPTZ::GetStatus(_tptz__GetStatusResponse &StatusResponse,string profileToken)
 {
 	string strUrl;
 	string strUser;
@@ -255,7 +277,7 @@ int OnvifClientPTZ::GetStatus(_tptz__GetStatusResponse &StatusResponse,string pr
 
 }
 
-int OnvifClientPTZ::GetNode(_tptz__GetNodeResponse &GetNodeResponse, string nodeToken)
+inline int OnvifClientPTZ::GetNode(_tptz__GetNodeResponse &GetNodeResponse, string nodeToken)
 {
 	string strUrl;
 	string strUser;
@@ -276,7 +298,7 @@ int OnvifClientPTZ::GetNode(_tptz__GetNodeResponse &GetNodeResponse, string node
 	return ptzProxy.GetNode(&GetNodeReq,&GetNodeResponse);
 }
 
-int OnvifClientPTZ::GetNodes(_tptz__GetNodesResponse &GetNodesResponse)
+inline int OnvifClientPTZ::GetNodes(_tptz__GetNodesResponse &GetNodesResponse)
 {
 	string strUrl;
 	string strUser;
@@ -301,7 +323,7 @@ int OnvifClientPTZ::GetNodes(_tptz__GetNodesResponse &GetNodesResponse)
 
 }
 
-int OnvifClientPTZ::GetConfigurations(_tptz__GetConfigurationsResponse &configurationsResp)
+inline int OnvifClientPTZ::GetConfigurations(_tptz__GetConfigurationsResponse &configurationsResp)
 {
 	string strUrl;
 	string strUser;
@@ -323,7 +345,7 @@ int OnvifClientPTZ::GetConfigurations(_tptz__GetConfigurationsResponse &configur
 	return ptzProxy.GetConfigurations( &configurationsReq, &configurationsResp) ;
 }
 
-int OnvifClientPTZ::GetConfiguration(_tptz__GetConfigurationResponse &configurationResp)
+inline int OnvifClientPTZ::GetConfiguration(_tptz__GetConfigurationResponse &configurationResp)
 {
 	string strUrl;
 	string strUser;
@@ -345,7 +367,7 @@ int OnvifClientPTZ::GetConfiguration(_tptz__GetConfigurationResponse &configurat
 	return ptzProxy.GetConfiguration( &configurationReq, &configurationResp) ;
 }
 
-int OnvifClientPTZ::GetConfigurationOptions(_tptz__GetConfigurationOptionsResponse &configOptions, string configToken)
+inline int OnvifClientPTZ::GetConfigurationOptions(_tptz__GetConfigurationOptionsResponse &configOptions, string configToken)
 {
 	string strUrl;
 	string strUser;
@@ -371,14 +393,14 @@ int OnvifClientPTZ::GetConfigurationOptions(_tptz__GetConfigurationOptionsRespon
 
 /* END - Added by John 7/2/14 */
 
-OnvifClientPTZ::OnvifClientPTZ(OnvifClientDevice &device)
+inline OnvifClientPTZ::OnvifClientPTZ(OnvifClientDevice &device)
 : m_Device(device)
 {
 	if(m_Device.GetCapabilities()==SOAP_OK)
 		Initialize();
 }
 
-OnvifClientPTZ::~OnvifClientPTZ()
+inline OnvifClientPTZ::~OnvifClientPTZ()
 {
 
 }

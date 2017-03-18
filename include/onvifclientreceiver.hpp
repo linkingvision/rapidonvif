@@ -1,3 +1,26 @@
+/** <!--
+ *
+ *  Copyright (C) 2017 veyesys support@veyesys.com
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  If you would like this software to be made available to you under an 
+ *  alternate commercial license please email support@veyesys.com 
+ *  for more information.
+ *
+ * -->
+ */
 #ifndef __ONVIF_CLIENT_RECEIVER__
 #define __ONVIF_CLIENT_RECEIVER__
 
@@ -21,15 +44,15 @@ public:
     ~OnvifClientReceiver();
 public:
 	//Dealing with receivers
-	int OnvifClientReceiver::GetReceivers(_trv__GetReceiversResponse & receivers);
-	int OnvifClientReceiver::GetReceiver(_trv__GetReceiverResponse &receiverResponsem, string ReceiverToken);
-	int OnvifClientReceiver::CreateReceiver(_trv__CreateReceiverResponse &CreateReceiverResponse, tt__ReceiverConfiguration &ReceiverConfiguration);
-	int OnvifClientReceiver::DeleteReceiver(_trv__DeleteReceiverResponse &DeleteReceiverResponse, string ReceiverToken);
+	int GetReceivers(_trv__GetReceiversResponse & receivers);
+	int GetReceiver(_trv__GetReceiverResponse &receiverResponsem, string ReceiverToken);
+	int CreateReceiver(_trv__CreateReceiverResponse &CreateReceiverResponse, tt__ReceiverConfiguration &ReceiverConfiguration);
+	int DeleteReceiver(_trv__DeleteReceiverResponse &DeleteReceiverResponse, string ReceiverToken);
 	//receiver status functions
-	int OnvifClientReceiver::ConfigureReceiver(_trv__ConfigureReceiverResponse &ConfigureReceiverResponse, string ReceiverToken,tt__ReceiverConfiguration &ReceiverConfiguration);
-	int OnvifClientReceiver::SetReceiverMode(_trv__SetReceiverModeResponse &SetReceiverModeResponse, string ReceiverToken,tt__ReceiverMode &ReceiverConfiguration);
-	int OnvifClientReceiver::GetReceiverState(_trv__GetReceiverStateResponse &GetReceiverStateResponse, string ReceiverToken);
-	int OnvifClientReceiver::GetServiceCapabilities(_trv__GetServiceCapabilitiesResponse &GetReceiverStateResponse);
+	int ConfigureReceiver(_trv__ConfigureReceiverResponse &ConfigureReceiverResponse, string ReceiverToken,tt__ReceiverConfiguration &ReceiverConfiguration);
+	int SetReceiverMode(_trv__SetReceiverModeResponse &SetReceiverModeResponse, string ReceiverToken,tt__ReceiverMode &ReceiverConfiguration);
+	int GetReceiverState(_trv__GetReceiverStateResponse &GetReceiverStateResponse, string ReceiverToken);
+	int GetServiceCapabilities(_trv__GetServiceCapabilitiesResponse &GetReceiverStateResponse);
 
 private:
 	OnvifClientDevice &m_Device;

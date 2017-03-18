@@ -1,3 +1,26 @@
+/** <!--
+ *
+ *  Copyright (C) 2017 veyesys support@veyesys.com
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  If you would like this software to be made available to you under an 
+ *  alternate commercial license please email support@veyesys.com 
+ *  for more information.
+ *
+ * -->
+ */
 #ifndef __ONVIF_SERVER_EVENT__
 #define __ONVIF_SERVER_EVENT__
 
@@ -56,18 +79,20 @@ inline OnvifServerEventProducer::~OnvifServerEventProducer()
 
 inline void OnvifServerEventProducer::NotifyMessage()
 {
-	PullPointSubscriptionBindingProxy m_proxy(soap_new());
+	PullPointSubscriptionBindingProxy m_proxy(*(soap_new()));
 	SOAP_ENV__Header m_header;
-	m_header.wsa5__Action = (char *) soap_malloc( m_proxy.soap, 1024 );
+#if 0
+	m_header.wsa5__Action = (char *) soap_malloc( &m_proxy, 1024 );
 	strcpy(m_header.wsa5__Action, "http://docs.oasis-open.org/wsn/bw-2/NotificationConsumer/Notify");
 	//m_header.wsa__MessageID = NULL;
 	//m_header.wsa__To = NULL;
        //m_header.wsa__Action = NULL;
 	m_proxy.soap->header = &m_header;
+#endif
 	
 	_wsnt__Notify message;
-	wsnt__NotificationMessageHolderType *holder = soap_instantiate_wsnt__NotificationMessageHolderType(m_proxy.soap, -1, "", "", NULL);
-	wsnt__TopicExpressionType * topic = soap_instantiate_wsnt__TopicExpressionType(m_proxy.soap, -1, "", "", NULL );
+	wsnt__NotificationMessageHolderType *holder = soap_instantiate_wsnt__NotificationMessageHolderType(&m_proxy, -1, "", "", NULL);
+	wsnt__TopicExpressionType * topic = soap_instantiate_wsnt__TopicExpressionType(&m_proxy, -1, "", "", NULL );
 	topic->Dialect = "http://docs.oasis-open.org/wsn/t-1/TopicExpression/Concrete";
 	holder->Topic = topic;
 	holder->SubscriptionReference = NULL;
@@ -80,8 +105,8 @@ inline void OnvifServerEventProducer::NotifyMessage()
              it != localSubs.end(); ++it )
 	{
 	     printf("Notify %s\n", (*it).c_str());
-            m_proxy.Notify((*it).c_str(), 
-				"http://docs.oasis-open.org/wsn/bw-2/NotificationConsumer/Notify", &message);
+            //m_proxy.Notify((*it).c_str(), 
+			//	"http://docs.oasis-open.org/wsn/bw-2/NotificationConsumer/Notify", &message);
         }
 }
 
@@ -100,8 +125,8 @@ inline void OnvifServerEventProducer::AddConsumer(std::string consumerEndpoint)
 class OnvifServerEvent : public PullPointSubscriptionBindingService
 {
 public:
-	OnvifServerEvent(struct soap* pData, OnvifServerEventProducer &pProducer, string strEventEndpoint)
-	: m_EventCnt(0), PullPointSubscriptionBindingService(pData), m_Producer(pProducer), m_strEventEndpoint(strEventEndpoint)
+	OnvifServerEvent(OnvifServerEventProducer &pProducer, string strEventEndpoint)
+	: m_EventCnt(0), PullPointSubscriptionBindingService(), m_Producer(pProducer), m_strEventEndpoint(strEventEndpoint)
 	{
 	
 	}
@@ -166,14 +191,14 @@ public:
 	{
 		std::string consumer( wsnt__Subscribe->ConsumerReference.Address );
 
-		wsnt__SubscribeResponse->SubscriptionReference.Address = (char *) soap_malloc(soap, sizeof(char) * INFO_LENGTH);
+		wsnt__SubscribeResponse->SubscriptionReference.Address = (char *) soap_malloc(this, sizeof(char) * INFO_LENGTH);
 		strcpy( wsnt__SubscribeResponse->SubscriptionReference.Address,
 		        m_strEventEndpoint.c_str() );
 
 		time_t current = time(0);
-		wsnt__SubscribeResponse->CurrentTime =  (time_t *) soap_malloc(soap, sizeof(time_t *) );
+		wsnt__SubscribeResponse->CurrentTime = (time_t *)soap_malloc(this, sizeof(time_t *));
 		memcpy(wsnt__SubscribeResponse->CurrentTime, &current, sizeof(time_t));
-		wsnt__SubscribeResponse->TerminationTime = (time_t *) soap_malloc(soap, sizeof(time_t *) );
+		wsnt__SubscribeResponse->TerminationTime = (time_t *)soap_malloc(this, sizeof(time_t *));
 		current += 1000000;
 		memcpy(wsnt__SubscribeResponse->TerminationTime, &current, sizeof(time_t));
 
