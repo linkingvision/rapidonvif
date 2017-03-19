@@ -1,10 +1,10 @@
 /*
 	dom.c[pp]
 
-	gSOAP DOM implementation v3
+	gSOAP DOM implementation v2
 
 gSOAP XML Web services tools
-Copyright (C) 2000-2012, Robert van Engelen, Genivia, Inc. All Rights Reserved.
+Copyright (C) 2000-2009, Robert van Engelen, Genivia, Inc. All Rights Reserved.
 This part of the software is released under ONE of the following licenses:
 GPL, or the gSOAP public license, or Genivia's license for commercial use.
 --------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the License.
 
 The Initial Developer of the Original Code is Robert A. van Engelen.
-Copyright (C) 2000-2012 Robert A. van Engelen, Genivia inc. All Rights Reserved.
+Copyright (C) 2000-2009 Robert A. van Engelen, Genivia inc. All Rights Reserved.
 --------------------------------------------------------------------------------
 GPL license.
 
@@ -49,7 +49,6 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 #include "stdsoap2.h"
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__anyType(struct soap*, struct soap_dom_element const*);
-SOAP_FMAC3 void SOAP_FMAC4 soap_traverse_xsd__anyType(struct soap*, struct soap_dom_element*, const char*, soap_walker, soap_walker);
 SOAP_FMAC1 void SOAP_FMAC2 soap_default_xsd__anyType(struct soap*, struct soap_dom_element *);
 SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__anyType(struct soap*, const struct soap_dom_element *, const char*, const char*);
 SOAP_FMAC1 int SOAP_FMAC2 soap_out_xsd__anyType(struct soap*, const char*, int, const struct soap_dom_element *, const char*);
@@ -57,7 +56,6 @@ SOAP_FMAC3 struct soap_dom_element * SOAP_FMAC4 soap_get_xsd__anyType(struct soa
 SOAP_FMAC1 struct soap_dom_element * SOAP_FMAC2 soap_in_xsd__anyType(struct soap*, const char*, struct soap_dom_element *, const char*);
 
 SOAP_FMAC3 void SOAP_FMAC4 soap_serialize_xsd__anyAttribute(struct soap*, struct soap_dom_attribute const*);
-SOAP_FMAC3 void SOAP_FMAC4 soap_traverse_xsd__anyAttribute(struct soap*, struct soap_dom_attribute*, const char*, soap_walker, soap_walker);
 SOAP_FMAC1 void SOAP_FMAC2 soap_default_xsd__anyAttribute(struct soap*, struct soap_dom_attribute *);
 SOAP_FMAC3 int SOAP_FMAC4 soap_put_xsd__anyAttribute(struct soap*, const struct soap_dom_attribute *, const char*, const char*);
 SOAP_FMAC1 int SOAP_FMAC2 soap_out_xsd__anyAttribute(struct soap*, const char*, int, const struct soap_dom_attribute *, const char*);
@@ -68,10 +66,7 @@ SOAP_FMAC1 struct soap_dom_attribute * SOAP_FMAC2 soap_in_xsd__anyAttribute(stru
 extern "C" {
 #endif
 
-#ifndef WITH_NOIDREF
 SOAP_FMAC1 void SOAP_FMAC2 soap_markelement(struct soap*, const void*, int);
-#endif
-
 SOAP_FMAC1 int SOAP_FMAC2 soap_putelement(struct soap*, const void*, const char*, int, int);
 SOAP_FMAC1 void *SOAP_FMAC2 soap_getelement(struct soap*, int*);
 
@@ -110,26 +105,12 @@ soap_serialize_xsd__anyType(struct soap *soap, const struct soap_dom_element *no
   }
 }
 
-SOAP_FMAC3
-void
-SOAP_FMAC4
-soap_traverse_xsd__anyType(struct soap *soap, struct soap_dom_element *node, const char *s, soap_walker p, soap_walker q)
-{ 
-}
-
 /******************************************************************************/
 
 SOAP_FMAC1
 void
 SOAP_FMAC2
 soap_serialize_xsd__anyAttribute(struct soap *soap, const struct soap_dom_attribute *node)
-{
-}
-
-SOAP_FMAC1
-void
-SOAP_FMAC2
-soap_traverse_xsd__anyAttribute(struct soap *soap, struct soap_dom_attribute *node, const char *s, soap_walker p, soap_walker q)
 {
 }
 
@@ -196,17 +177,13 @@ out_element(struct soap *soap, const struct soap_dom_element *node, const char *
         return soap->error = SOAP_EOM;
     }
     sprintf(s, "%s:%s", prefix, name);
-    soap_element(soap, s, 0, NULL); /* element() */
+    if (soap_element(soap, s, 0, NULL)) /* element() */
+      return soap->error;
     if (s != soap->msgbuf)
       SOAP_FREE(soap, s);
   }
   else if (*name != '-')
-  { soap_mode m = soap->mode;
-    if ((soap->mode & SOAP_DOM_ASIS))
-      soap->mode &= ~SOAP_XML_INDENT;
-    soap_element(soap, name, 0, NULL); /* element() */
-    soap->mode = m;
-  }
+    return soap_element(soap, name, 0, NULL); /* element() */
   return soap->error;
 }
 
@@ -337,60 +314,43 @@ soap_out_xsd__anyType(struct soap *soap, const char *tag, int id, const struct s
             return soap->error;
         }
       }
-      if ((soap->mode & SOAP_DOM_ASIS) && !node->data && !node->wide && !node->elts && !node->tail)
-      { soap_mode m = soap->mode;
-        soap->mode &= ~SOAP_XML_INDENT;
-	if (*tag != '-' && soap_element_start_end_out(soap, tag))
+      if (*tag != '-' && soap_element_start_end_out(soap, NULL))
+        return soap->error;
+      if (node->data)
+      { if (soap_string_out(soap, node->data, 0))
           return soap->error;
-        soap->mode = m;
+      }
+      else if (node->wide)
+      { if (soap_wstring_out(soap, node->wide, 0))
+          return soap->error;
+      }
+      for (elt = node->elts; elt; elt = elt->next)
+      { if (soap_out_xsd__anyType(soap, tag, 0, elt, NULL))
+          return soap->error;
+      }
+      if (node->tail && soap_send(soap, node->tail))
+        return soap->error;
+      if (!prefix || !*prefix)
+      { DBGLOG(TEST, SOAP_MESSAGE(fdebug, "End of DOM node '%s'\n", tag + colon));
+        if (soap_element_end_out(soap, tag + colon))
+          return soap->error;
       }
       else
-      { if (*tag != '-' && soap_element_start_end_out(soap, NULL))
+      { char *s;
+        if (strlen(prefix) + strlen(tag + colon) < sizeof(soap->msgbuf))
+	  s = soap->msgbuf;
+	else
+	{ s = (char*)SOAP_MALLOC(soap, strlen(prefix) + strlen(tag + colon) + 2);
+          if (!s)
+            return soap->error = SOAP_EOM;
+	}
+        DBGLOG(TEST, SOAP_MESSAGE(fdebug, "End of DOM node '%s'\n", tag));
+	sprintf(s, "%s:%s", prefix, tag + colon);
+	soap_pop_namespace(soap);
+        if (soap_element_end_out(soap, s))
           return soap->error;
-        if (*tag != '-' && node->data)
-        { if (soap_string_out(soap, node->data, 0))
-            return soap->error;
-        }
-        else if (node->data)
-        { if (soap_send(soap, node->data))
-            return soap->error;
-        }
-        else if (node->wide)
-        { if (soap_wstring_out(soap, node->wide, 0))
-            return soap->error;
-        }
-        for (elt = node->elts; elt; elt = elt->next)
-        { if (soap_out_xsd__anyType(soap, NULL, 0, elt, NULL))
-            return soap->error;
-        }
-        if (node->tail && soap_send(soap, node->tail))
-          return soap->error;
-        if (!prefix || !*prefix)
-        { soap_mode m = soap->mode;
-	  DBGLOG(TEST, SOAP_MESSAGE(fdebug, "End of DOM node '%s'\n", tag + colon));
-          if ((soap->mode & SOAP_DOM_ASIS))
-	    soap->mode &= ~SOAP_XML_INDENT;
-          if (soap_element_end_out(soap, tag + colon))
-            return soap->error;
-	  soap->mode = m;
-        }
-        else
-        { char *s;
-          if (strlen(prefix) + strlen(tag + colon) < sizeof(soap->msgbuf))
-	    s = soap->msgbuf;
-	  else
-	  { s = (char*)SOAP_MALLOC(soap, strlen(prefix) + strlen(tag + colon) + 2);
-            if (!s)
-              return soap->error = SOAP_EOM;
-	  }
-          DBGLOG(TEST, SOAP_MESSAGE(fdebug, "End of DOM node '%s'\n", tag));
-	  sprintf(s, "%s:%s", prefix, tag + colon);
-	  soap_pop_namespace(soap);
-          if (soap_element_end_out(soap, s))
-            return soap->error;
-          if (s != soap->msgbuf)
-	    SOAP_FREE(soap, s);
-        }
+        if (s != soap->msgbuf)
+	  SOAP_FREE(soap, s);
       }
     }
   }
@@ -421,7 +381,7 @@ soap_out_xsd__anyAttribute(struct soap *soap, const char *tag, int id, const str
     { if (node->nstr && !(soap->mode & SOAP_DOM_ASIS) && strncmp(node->name, "xml", 3) && !strchr(node->name, ':'))
       { const char *p;
         p = soap_lookup_ns_prefix(soap, node->nstr);
-	if (!p && !(p = soap_push_ns_prefix(soap, NULL, node->nstr, 1)))
+        if (!p && (p = soap_push_ns_prefix(soap, NULL, node->nstr, 1)) == NULL)
           return soap->error;
         if (out_attribute(soap, p, node->name, node->data, node->wide, 1))
           return soap->error;
@@ -443,21 +403,7 @@ soap_in_xsd__anyType(struct soap *soap, const char *tag, struct soap_dom_element
 { register struct soap_attribute *tp;
   register struct soap_dom_attribute **att;
   if (soap_peek_element(soap))
-  { if (soap->error != SOAP_NO_TAG)
-      return NULL;
-    if (!node)
-    { if (!(node = (struct soap_dom_element*)soap_malloc(soap, sizeof(struct soap_dom_element))))
-      { soap->error = SOAP_EOM;
-        return NULL;
-      }
-    }
-    soap_default_xsd__anyType(soap, node);
-    if (!(node->data = soap_string_in(soap, 1, -1, -1)) || !*node->data)
-      return NULL;
-    DBGLOG(TEST, SOAP_MESSAGE(fdebug, "DOM node with cdata\n"));
-    soap->error = SOAP_OK;
-    return node;
-  }
+    return NULL;
   if (!node)
   { if (!(node = (struct soap_dom_element*)soap_malloc(soap, sizeof(struct soap_dom_element))))
     { soap->error = SOAP_EOM;
@@ -475,9 +421,9 @@ soap_in_xsd__anyType(struct soap *soap, const char *tag, struct soap_dom_element
     else
       node->name = soap_strdup(soap, soap->tag);
   }
-  DBGLOG(TEST, SOAP_MESSAGE(fdebug, "DOM node '%s' start xmlns='%s'\n", node->name, node->nstr?node->nstr:""));
+  DBGLOG(TEST, SOAP_MESSAGE(fdebug, "DOM node '%s' parsed in namespace '%s'\n", node->name, node->nstr?node->nstr:""));
   if ((soap->mode & SOAP_DOM_NODE) || (!(soap->mode & SOAP_DOM_TREE) && *soap->id))
-  { if ((node->node = soap_getelement(soap, &node->type)) && node->type)
+  { if ((node->node = soap_getelement(soap, &node->type)))
     { DBGLOG(TEST, SOAP_MESSAGE(fdebug, "DOM node contains type %d from xsi:type\n", node->type));
       return node;
     }
@@ -489,7 +435,7 @@ soap_in_xsd__anyType(struct soap *soap, const char *tag, struct soap_dom_element
   att = &node->atts;
   for (tp = soap->attributes; tp; tp = tp->next)
   { if (tp->visible)
-    { DBGLOG(TEST, SOAP_MESSAGE(fdebug, "DOM node attribute='%s'\n", tp->name));
+    { DBGLOG(TEST, SOAP_MESSAGE(fdebug, "DOM node attribute='%s' parsed\n", tp->name));
       *att = (struct soap_dom_attribute*)soap_malloc(soap, sizeof(struct soap_dom_attribute));
       if (!*att)
       { soap->error = SOAP_EOM;
@@ -547,7 +493,7 @@ soap_in_xsd__anyType(struct soap *soap, const char *tag, struct soap_dom_element
       return NULL;
     if (soap_element_end_in(soap, node->name))
       return NULL;
-    DBGLOG(TEST, SOAP_MESSAGE(fdebug, "DOM node end '%s'\n", node->name));
+    DBGLOG(TEST, SOAP_MESSAGE(fdebug, "End of DOM node '%s'\n", node->name));
   }
   return node;
 }
@@ -651,7 +597,7 @@ soap_push_ns_prefix(struct soap *soap, const char *id, const char *ns, int flag)
   if (!id)
   { struct Namespace *n;
     for (n = soap->local_namespaces; n && n->id; n++)
-    { if (n->ns && !strcmp(n->ns, ns))
+    { if (n->ns == ns || !strcmp(n->ns, ns))
       { id = n->id;
         break;
       }
@@ -844,7 +790,7 @@ void soap_dom_element::unlink()
   if (elts)
     elts->unlink();
   if (atts)
-    atts->unlink();
+    elts->unlink();
   if (next)
     next->unlink();
   node = NULL;
@@ -892,21 +838,6 @@ soap_dom_attribute::soap_dom_attribute(struct soap *soap, const char *nstr, cons
 
 soap_dom_attribute::~soap_dom_attribute()
 { }
-
-/******************************************************************************/
-
-soap_dom_attribute &soap_dom_attribute::set(const char *nstr, const char *name)
-{ this->nstr = soap_strdup(soap, nstr);
-  this->name = soap_strdup(soap, name);
-  return *this;
-}
-
-/******************************************************************************/
-
-soap_dom_attribute &soap_dom_attribute::set(const char *data)
-{ this->data = soap_strdup(soap, data);
-  return *this;
-}
 
 /******************************************************************************/
 

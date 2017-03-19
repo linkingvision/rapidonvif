@@ -160,12 +160,6 @@ else
   // process the response 
 @endcode
 
-To generate a UUID for the RequestMessageID, use:
-
-@code
-const char *RequestMessageID = soap_wsa_rand_uuid(soap);
-@endcode
-
 @subsection wsa_2_2 Information Headers for Relaying Server Responses
 
 To relay the response to another destination, the WS-Addressing ReplyTo
@@ -328,13 +322,11 @@ Important: to dispatch service operations based on the WS-Addressing wsa:Action
 information header, you must use soapcpp2 option -a. The generates a new
 dispatcher (in soapServer.c) based on the action value.
 
-A service operation implementation should use soap_wsa_check() at the start of
-its execution to verify the validity of the WS-Addressing information headers
-in the SOAP request message. To allow response message to be automatically
-relayed based on the ReplyTo information header, the service operation should
-return soap_wsa_reply() with an optional message UUID string and a mandatory
-response action string. The response action string is documented in the
-wsdl2h-generated .h file for this service operation.
+A service operation implementation should use soap_wsa_check() to verify the
+validity of the WS-Addressing information headers in the SOAP request message.
+To allow response message to be automatically relayed based on the ReplyTo
+information header, the service operation should return soap_wsa_reply() with
+an optional message UUID string and a mandatory response action string.
 
 For example:
 
@@ -351,11 +343,8 @@ To return a SOAP fault that is automatically relayed to a fault service based
 on the FaultTo information header, the soap_wsa_sender_fault(),
 soap_wsa_receiver_fault(), soap_wsa_sender_fault_subcode(), and
 soap_wsa_receiver_fault_subcode() functions should be used instead of the
-usual soap_sender_fault(), soap_receiver_fault(), soap_sender_fault_subcode(),
-and soap_receiver_fault_subcode(), respectively. In case a Action must be
-associated with a SOAP Fault, use the soap_wsa_sender_fault_subcode_action()
-and soap_wsa_receiver_fault_subcode_action() functions to set the WS-Addressing
-Action (and HTTP SOAP Action header as well).
+soap_sender_fault(), soap_receiver_fault(), soap_sender_fault_subcode(), and
+soap_receiver_fault_subcode(), respectively.
 
 For example, the following service operation illustrates the use of
 soap_wsa_check() to verify and process WS-Addressing header blocks and
@@ -410,8 +399,7 @@ if (!soap_valid_socket(soap_bind(soap, NULL, port, 100)))
 To implement a separate server for handling relayed SOAP response messages
 based on the ReplyTo information header in the request message, the gSOAP
 header file should include a one-way service operation for the response
-message. These one-way response service operations are automatically generated
-with wsdl2h option -b.
+message.
 
 For example, suppose a service operation returns an exampleResponse message. We
 declare the one-way exampleResponse operation as follows:
@@ -459,8 +447,8 @@ service operation. This allows us both to implement a one-way service operation
 that accepts faults and to automatically generate the fault struct for fault
 data storage and manipulation. 
 
-The fault operation in the WS-Addressing files (wsa5.h etc.) is declared as
-follows (here shown for the 2004/08 standard):
+The fault operation in the header file should be declared as follows (for the
+2004/08 standard):
 
 @code
 //gsoap SOAP_ENV service method-action: Fault http://schemas.xmlsoap.org/ws/2004/08/addressing/fault
@@ -481,11 +469,10 @@ int SOAP_ENV__Fault
 Because each service operation has a struct to hold its input parameters, we
 automatically generate the (original) SOAP_ENV__Fault struct on the fly!
 
-It is important to associate the wsa fault action with this operation as shown
-above.
+Note: it is important to associate the wsa fault action with this operation as
+shown above.
 
-The implementation of the Fault service operation in your server code should be
-something like:
+The implementation of the service operation in the server code is:
 
 @code
 int SOAP_ENV__Fault(struct soap *soap, char *faultcode, char *faultstring, char *faultactor, struct SOAP_ENV__Detail *detail, struct SOAP_ENV__Code *SOAP_ENV__Code, struct SOAP_ENV__Reason *SOAP_ENV__Reason, char *SOAP_ENV__Node, char *SOAP_ENV__Role, struct SOAP_ENV__Detail *SOAP_ENV__Detail)
@@ -543,9 +530,6 @@ const char *soap_wsa_noneURI = "addressing/none not supported";
 const char *soap_wsa_faultAction = "http://schemas.xmlsoap.org/ws/2004/08/addressing/fault";
 #endif
 
-/** anonymous URI of 2004 and 2005 schemas */
-const char *soap_wsa_allAnonymousURI = "http://schemas.xmlsoap.org/ws/2004/03/addressing/role/anonymous http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous http://www.w3.org/2005/08/addressing/anonymous";
-
 /******************************************************************************\
  *
  *	Static protos
@@ -558,59 +542,8 @@ static void soap_wsa_delete(struct soap *soap, struct soap_plugin *p);
 static int soap_wsa_header(struct soap *soap);
 static void soap_wsa_set_error(struct soap *soap, const char **c, const char **s);
 static int soap_wsa_response(struct soap *soap, int status, size_t count);
-static int soap_wsa_disconnect(struct soap *soap);
 
 static int soap_wsa_alloc_header(struct soap *soap);
-
-/******************************************************************************\
- *
- *	UUID
- *
-\******************************************************************************/
-
-/**
-@fn const char *soap_wsa_rand_uuid(struct soap *soap)
-@brief Generates a random UUID (UUID algorithm version 4). Compile all source
-codes with -DWITH_OPENSSL for better randomness results.
-@param soap context
-@return UUID "urn:uuid:xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-*/
-const char*
-soap_wsa_rand_uuid(struct soap *soap)
-{ const int uuidlen = 48;
-  char *uuid = (char*)soap_malloc(soap, uuidlen);
-  int r1, r2, r3, r4;
-#ifdef WITH_OPENSSL
-  r1 = soap_random;
-  r2 = soap_random;
-#else
-  static int k = 0xFACEB00B;
-  int lo = k % 127773;
-  int hi = k / 127773;
-# ifdef HAVE_GETTIMEOFDAY
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  r1 = 10000000 * tv.tv_sec + tv.tv_usec;
-#else
-  r1 = (int)time(NULL);
-# endif
-  k = 16807 * lo - 2836 * hi;
-  if (k <= 0)
-    k += 0x7FFFFFFF;
-  r2 = k;
-  k &= 0x8FFFFFFF;
-  r2 += *(int*)soap->buf;
-#endif
-  r3 = soap_random;
-  r4 = soap_random;
-#ifdef HAVE_SNPRINTF
-  soap_snprintf(uuid, uuidlen, "urn:uuid:%8.8x-%4.4hx-4%3.3hx-%4.4hx-%4.4hx%8.8x", r1, (short)(r2 >> 16), ((short)r2 >> 4) & 0x0FFF, ((short)(r3 >> 16) & 0x3FFF) | 0x8000, (short)r3, r4);
-#else
-  sprintf(uuid, "urn:uuid:%8.8x-%4.4hx-4%3.3hx-%4.4hx-%4.4hx%8.8x", r1, (short)(r2 >> 16), ((short)r2 >> 4) & 0x0FFF, ((short)(r3 >> 16) & 0x3FFF) | 0x8000, (short)r3, r4);
-#endif
-  DBGFUN1("soap_wsa_rand_uuid", "%s", uuid);
-  return uuid;
-}
 
 /******************************************************************************\
  *
@@ -622,7 +555,8 @@ soap_wsa_rand_uuid(struct soap *soap)
 @fn int soap_wsa_request(struct soap *soap, const char *id, const char *to, const char *action)
 @brief Sets the WS-Addressing information header for the next request message
 with MessageID (optional), To (optional), and Action (required).
-@param soap context
+@param soap
+context
 @param[in] id is the message ID (optional)
 @param[in] to is the target endpoint (optional, set to anonymous when NULL)
 @param[in] action is the target action (required)
@@ -637,15 +571,14 @@ soap_wsa_request(struct soap *soap, const char *id, const char *to, const char *
   if (soap_wsa_alloc_header(soap))
     return soap->error;
   soap->header->SOAP_WSA(MessageID) = soap_strdup(soap, id);
-  if (to)
-    soap->header->SOAP_WSA(To) = soap_strdup(soap, to);
-  else /* this is optional */
-    soap->header->SOAP_WSA(To) = (char*)soap_wsa_anonymousURI;
+  if (!to)
+    to = (char*)soap_wsa_anonymousURI;
+  soap->header->SOAP_WSA(To) = soap_strdup(soap, to);
   soap->header->SOAP_WSA(Action) = soap_strdup(soap, action);
   soap->header->SOAP_WSA(RelatesTo) = NULL;
   soap->header->SOAP_WSA(From) = NULL;
+  soap->header->SOAP_WSA(ReplyTo) = NULL;
   soap->header->SOAP_WSA(FaultTo) = NULL;
-  soap_wsa_add_ReplyTo(soap, NULL);
   return soap_wsa_check(soap);
 }
 
@@ -687,7 +620,7 @@ soap_wsa_add_NoReply(struct soap *soap)
 @fn int soap_wsa_add_ReplyTo(struct soap *soap, const char *replyTo)
 @brief Sets WS-Addressing ReplyTo header for request message.
 @param soap context
-@param[in] replyTo endpoint URI or NULL for anonymous
+@param[in] replyTo endpoint URI 
 @return SOAP_OK or SOAP_ERR
 
 Use soap_wsa_request to populate the WS-Addressing header.
@@ -696,17 +629,11 @@ int
 soap_wsa_add_ReplyTo(struct soap *soap, const char *replyTo)
 { if (!soap->header)
     return SOAP_ERR;
-#ifndef SOAP_WSA_2005
-  if (!replyTo)
-    replyTo = soap_wsa_anonymousURI;
-#endif
   if (replyTo)
   { soap->header->SOAP_WSA(ReplyTo) = (SOAP_WSA_(,ReplyTo)*)soap_malloc(soap, sizeof(SOAP_WSA_(,ReplyTo)));
     SOAP_WSA_(soap_default,EndpointReferenceType)(soap, soap->header->SOAP_WSA(ReplyTo));
     soap->header->SOAP_WSA(ReplyTo)->Address = soap_strdup(soap, replyTo);
   }
-  else
-    soap->header->SOAP_WSA(ReplyTo) = NULL;
   return SOAP_OK;
 }
 
@@ -714,7 +641,7 @@ soap_wsa_add_ReplyTo(struct soap *soap, const char *replyTo)
 @fn int soap_wsa_add_FaultTo(struct soap *soap, const char *faultTo)
 @brief Sets WS-Addressing FaultTo header for request message.
 @param soap context
-@param[in] faultTo endpoint URI or NULL for remove faultTo
+@param[in] faultTo endpoint URI 
 @return SOAP_OK or SOAP_ERR
 
 Use soap_wsa_request to populate the WS-Addressing header first.
@@ -728,82 +655,7 @@ soap_wsa_add_FaultTo(struct soap *soap, const char *faultTo)
     SOAP_WSA_(soap_default,EndpointReferenceType)(soap, soap->header->SOAP_WSA(FaultTo));
     soap->header->SOAP_WSA(FaultTo)->Address = soap_strdup(soap, faultTo);
   }
-  else
-    soap->header->SOAP_WSA(FaultTo) = NULL;
   return SOAP_OK;
-}
-
-/**
-@fn int soap_wsa_add_RelatesTo(struct soap *soap, const char *relatesTo)
-@brief Sets WS-Addressing RelatesTo header.
-@param soap context
-@param[in] relatesTo endpoint URI 
-@return SOAP_OK or SOAP_ERR
-
-Use soap_wsa_request to populate the WS-Addressing header.
-*/
-int
-soap_wsa_add_RelatesTo(struct soap *soap, const char *relatesTo)
-{ if (!soap->header)
-    return SOAP_ERR;
-  if (relatesTo)
-  { soap->header->SOAP_WSA(RelatesTo) = (SOAP_WSA_(,RelatesTo)*)soap_malloc(soap, sizeof(SOAP_WSA_(,RelatesTo)));
-    SOAP_WSA_(soap_default_,RelatesTo)(soap, soap->header->SOAP_WSA(RelatesTo));
-    soap->header->SOAP_WSA(RelatesTo)->__item = soap_strdup(soap, relatesTo);
-  }
-  return SOAP_OK;
-}
-
-/**
-@fn const char *soap_wsa_From(struct soap *soap)
-@brief Returns WS-Addressing From header.
-@param soap context
-@return From string or NULL
-*/
-const char*
-soap_wsa_From(struct soap *soap)
-{ if (!soap->header || !soap->header->SOAP_WSA(From))
-    return NULL;
-  return soap->header->SOAP_WSA(From)->Address;
-}
-
-/**
-@fn const char *soap_wsa_ReplyTo(struct soap *soap)
-@brief Returns WS-Addressing ReplyTo header.
-@param soap context
-@return From string or NULL
-*/
-const char*
-soap_wsa_ReplyTo(struct soap *soap)
-{ if (!soap->header || !soap->header->SOAP_WSA(ReplyTo))
-    return NULL;
-  return soap->header->SOAP_WSA(ReplyTo)->Address;
-}
-
-/**
-@fn const char *soap_wsa_FaultTo(struct soap *soap)
-@brief Returns WS-Addressing FaultTo header.
-@param soap context
-@return From string or NULL
-*/
-const char*
-soap_wsa_FaultTo(struct soap *soap)
-{ if (!soap->header || !soap->header->SOAP_WSA(FaultTo))
-    return NULL;
-  return soap->header->SOAP_WSA(FaultTo)->Address;
-}
-
-/**
-@fn const char *soap_wsa_RelatesTo(struct soap *soap)
-@brief Returns WS-Addressing RelatesTo header.
-@param soap context
-@return From string or NULL
-*/
-const char*
-soap_wsa_RelatesTo(struct soap *soap)
-{ if (!soap->header || !soap->header->SOAP_WSA(RelatesTo))
-    return NULL;
-  return soap->header->SOAP_WSA(RelatesTo)->__item;
 }
 
 /******************************************************************************\
@@ -821,7 +673,7 @@ soap_wsa_RelatesTo(struct soap *soap)
 int
 soap_wsa_check(struct soap *soap)
 { DBGFUN("soap_wsa_check");
-  if (!soap->header || !soap->header->SOAP_WSA(Action))
+  if (!soap->header || !soap->header->SOAP_WSA(To) || !soap->header->SOAP_WSA(Action))
 #if defined(SOAP_WSA_2005)
     return soap_wsa_error(soap, wsa5__MessageAddressingHeaderRequired, NULL);
 #elif defined(SOAP_WSA_2003)
@@ -851,7 +703,7 @@ soap_wsa_reply(struct soap *soap, const char *id, const char *action)
     return soap->error = SOAP_PLUGIN_ERROR;
   oldheader = soap->header;
   soap->header = NULL;
-  /* if endpoint address for reply is 'none' return immediately and STOP engine */
+  /* if endpoint address for reply is 'none' return immediately */
   if (oldheader && oldheader->SOAP_WSA(ReplyTo) && oldheader->SOAP_WSA(ReplyTo)->Address && !strcmp(oldheader->SOAP_WSA(ReplyTo)->Address, soap_wsa_noneURI))
     return soap_send_empty_response(soap, SOAP_OK);
   /* allocate a new header */
@@ -874,49 +726,20 @@ soap_wsa_reply(struct soap *soap, const char *id, const char *action)
     SOAP_WSA_(soap_default_,RelatesTo)(soap, newheader->SOAP_WSA(RelatesTo));
     newheader->SOAP_WSA(RelatesTo)->__item = oldheader->SOAP_WSA(MessageID);
   }
-#ifdef SOAP_WSA_2005 
-  /* WCF Interoperability:
-     ChannelInstance is required when the WCF Application hosts multiple
-     Callback Channels within the same application. The
-     ReferenceParameters->ChannelInstance element serves as a hint to the WCF
-     Client dispatcher, as to which WCF callback instance a received SOAP
-     Envelope belongs to ChannelInstance is declared as a pointer, so it is
-     essentially an optional element. Tests with Applications not requiring
-     ChannelInstance have also been done for the following fix.
-  */
-  if (oldheader && oldheader->SOAP_WSA(ReplyTo) && oldheader->SOAP_WSA(ReplyTo)->ReferenceParameters && oldheader->SOAP_WSA(ReplyTo)->ReferenceParameters->chan__ChannelInstance)
-  { if (newheader)
-    { if (!newheader->chan__ChannelInstance)
-      { newheader->chan__ChannelInstance = (struct chan__ChannelInstanceType*)soap_malloc(soap, sizeof(struct chan__ChannelInstanceType));
-        if (newheader->chan__ChannelInstance)
-	{ soap_default_chan__ChannelInstanceType(soap, newheader->chan__ChannelInstance);
-          newheader->chan__ChannelInstance->__item = *(oldheader->SOAP_WSA(ReplyTo)->ReferenceParameters->chan__ChannelInstance);
-          newheader->chan__ChannelInstance->wsa5__IsReferenceParameter = _wsa5__IsReferenceParameter__true;
-        }
-      }
-      else
-      { newheader->chan__ChannelInstance->__item = *(oldheader->SOAP_WSA(ReplyTo)->ReferenceParameters->chan__ChannelInstance);
-        newheader->chan__ChannelInstance->wsa5__IsReferenceParameter = _wsa5__IsReferenceParameter__true;
-      }
-    }
-  }
-#endif
-  if (oldheader && oldheader->SOAP_WSA(ReplyTo) && oldheader->SOAP_WSA(ReplyTo)->Address && !soap_tagsearch(soap_wsa_allAnonymousURI, oldheader->SOAP_WSA(ReplyTo)->Address))
+  if (oldheader && oldheader->SOAP_WSA(ReplyTo) && oldheader->SOAP_WSA(ReplyTo)->Address && strcmp(oldheader->SOAP_WSA(ReplyTo)->Address, soap_wsa_anonymousURI))
   { newheader->SOAP_WSA(To) = oldheader->SOAP_WSA(ReplyTo)->Address;
     /* (re)connect to ReplyTo endpoint if From != ReplyTo */
     if (!oldheader->SOAP_WSA(From) || !oldheader->SOAP_WSA(From)->Address || strcmp(oldheader->SOAP_WSA(From)->Address, oldheader->SOAP_WSA(ReplyTo)->Address))
     { struct soap *reply_soap = soap_copy(soap);
       if (reply_soap)
       { soap_copy_stream(reply_soap, soap);
+        soap_clr_omode(reply_soap, SOAP_ENC_MIME | SOAP_ENC_DIME | SOAP_ENC_MTOM);
 	soap_free_stream(soap); /* prevents close in soap_connect() below */
-	soap->omode |= SOAP_ENC_XML; /* omit HTTP header ("encode XML body only") */
+        newheader->SOAP_WSA(FaultTo) = oldheader->SOAP_WSA(FaultTo);
+        soap->header = newheader;
         if (soap_connect(soap, newheader->SOAP_WSA(To), newheader->SOAP_WSA(Action)))
-        { int err;
-	  soap_copy_stream(soap, reply_soap);
-	  soap_free_stream(reply_soap);
-          soap_end(reply_soap);
-          soap_free(reply_soap);
-	  soap->header = oldheader;
+        { int err; 
+          soap_copy_stream(soap, reply_soap);
 #if defined(SOAP_WSA_2005)
           err = soap_wsa_error(soap, SOAP_WSA(DestinationUnreachable), newheader->SOAP_WSA(To));
 #elif defined(SOAP_WSA_2003)
@@ -924,13 +747,17 @@ soap_wsa_reply(struct soap *soap, const char *id, const char *action)
 #else
           err = soap_wsa_error(soap, SOAP_WSA(DestinationUnreachable));
 #endif
+	  soap_free_stream(reply_soap);
+          soap_end(reply_soap);
+          soap_free(reply_soap);
           soap->header = NULL;
           return err;
         }
         if (soap_valid_socket(reply_soap->socket))
-          soap_send_empty_response(reply_soap, SOAP_OK);	/* HTTP ACCEPTED */
-        soap->header = newheader;
-	soap->omode &= ~SOAP_ENC_XML; /* HTTP header required */
+        { soap_send_empty_response(reply_soap, SOAP_OK);	/* HTTP ACCEPTED */
+          soap_closesock(reply_soap);
+        }
+	soap_free_stream(reply_soap);
         soap_end(reply_soap);
         soap_free(reply_soap);
         data->fresponse = soap->fresponse;
@@ -943,7 +770,6 @@ soap_wsa_reply(struct soap *soap, const char *id, const char *action)
   else
     newheader->SOAP_WSA(To) = (char*)soap_wsa_anonymousURI;
   soap->header = newheader;
-  soap->action = newheader->SOAP_WSA(Action);
   return SOAP_OK;
 }
 
@@ -965,39 +791,12 @@ soap_wsa_reply(struct soap *soap, const char *id, const char *action)
 */
 int
 soap_wsa_fault_subcode(struct soap *soap, int flag, const char *faultsubcode, const char *faultstring, const char *faultdetail)
-{ return soap_wsa_fault_subcode_action(soap, flag, faultsubcode, faultstring, faultdetail, NULL); 
-}
-
-/**
-@fn int soap_wsa_fault_subcode_action(struct soap *soap, int flag, const char *faultsubcode, const char *faultstring, const char *faultdetail, const char *action)
-@brief Sets sender/receiver SOAP Fault (sub)code and action for server fault response.
-@param soap context
-@param[in] flag 0=receiver, 1=sender
-@param[in] faultsubcode sub code string
-@param[in] faultstring fault string
-@param[in] faultdetail detail string
-@param[in] action WS-Addressing action string
-@return SOAP_FAULT
-*/
-int
-soap_wsa_fault_subcode_action(struct soap *soap, int flag, const char *faultsubcode, const char *faultstring, const char *faultdetail, const char *action)
 { struct soap_wsa_data *data = (struct soap_wsa_data*)soap_lookup_plugin(soap, soap_wsa_id);
   struct SOAP_ENV__Header *oldheader, *newheader;
   DBGFUN2("soap_wsa_fault_subcode", "faultsubcode=%s", faultsubcode?faultsubcode:"(null)", "faultstring=%s", faultstring?faultstring:"(null)");
   if (!data)
     return soap->error = SOAP_PLUGIN_ERROR;
   oldheader = soap->header;
-  /* no FaultTo: use ReplyTo */
-  if (oldheader && oldheader->SOAP_WSA(ReplyTo) && (!oldheader->SOAP_WSA(FaultTo) || soap_tagsearch(soap_wsa_allAnonymousURI, oldheader->SOAP_WSA(FaultTo)->Address)))
-  { if (!oldheader->SOAP_WSA(FaultTo))
-    { oldheader->SOAP_WSA(FaultTo) = (SOAP_WSA_(,FaultTo)*)soap_malloc(soap, sizeof(SOAP_WSA_(,FaultTo)));
-      SOAP_WSA_(soap_default,EndpointReferenceType)(soap, soap->header->SOAP_WSA(FaultTo));
-    }
-    oldheader->SOAP_WSA(FaultTo)->Address = oldheader->SOAP_WSA(ReplyTo)->Address;
-  }
-  if (oldheader && oldheader->SOAP_WSA(FaultTo))
-  { DBGLOG(TEST, SOAP_MESSAGE(fdebug, "WSA FaultTo='%s'\n", oldheader->SOAP_WSA(FaultTo)->Address));
-  }
   if (oldheader && oldheader->SOAP_WSA(FaultTo) && !strcmp(oldheader->SOAP_WSA(FaultTo)->Address, soap_wsa_noneURI))
     return soap_send_empty_response(soap, SOAP_OK);	/* HTTP ACCEPTED */
   soap->header = NULL;
@@ -1005,7 +804,7 @@ soap_wsa_fault_subcode_action(struct soap *soap, int flag, const char *faultsubc
   if (soap_wsa_alloc_header(soap))
     return soap->error;
   newheader = soap->header;
-  soap_default_SOAP_ENV__Header(soap, newheader); /* remove/clear SOAP Header */
+  soap_default_SOAP_ENV__Header(soap, newheader);
   /* check header */
   if (oldheader && oldheader->SOAP_WSA(MessageID))
   { newheader->SOAP_WSA(RelatesTo) = (SOAP_WSA_(,RelatesTo)*)soap_malloc(soap, sizeof(SOAP_WSA_(,RelatesTo)));
@@ -1014,7 +813,7 @@ soap_wsa_fault_subcode_action(struct soap *soap, int flag, const char *faultsubc
   }
   /* header->wsa__MessageID = "..."; */
   newheader->SOAP_WSA(Action) = (char*)soap_wsa_faultAction;
-  if (oldheader && oldheader->SOAP_WSA(FaultTo) && oldheader->SOAP_WSA(FaultTo)->Address && !soap_tagsearch(soap_wsa_allAnonymousURI, oldheader->SOAP_WSA(FaultTo)->Address))
+  if (oldheader && oldheader->SOAP_WSA(FaultTo) && oldheader->SOAP_WSA(FaultTo)->Address && strcmp(oldheader->SOAP_WSA(FaultTo)->Address, soap_wsa_anonymousURI))
   { newheader->SOAP_WSA(To) = oldheader->SOAP_WSA(FaultTo)->Address;
     /* (re)connect to FaultTo endpoint if From != FaultTo */
     if (!oldheader->SOAP_WSA(From) || !oldheader->SOAP_WSA(From)->Address || strcmp(oldheader->SOAP_WSA(From)->Address, oldheader->SOAP_WSA(FaultTo)->Address))
@@ -1023,10 +822,7 @@ soap_wsa_fault_subcode_action(struct soap *soap, int flag, const char *faultsubc
       if (soap_connect(soap, newheader->SOAP_WSA(To), newheader->SOAP_WSA(Action)))
         return soap->error = SOAP_STOP;	/* nowhere to go */
       soap_set_endpoint(soap, newheader->SOAP_WSA(To));
-      if (action)
-        soap->action = (char*)action;
-      else
-        soap->action = newheader->SOAP_WSA(Action);
+      soap->action = newheader->SOAP_WSA(Action);
       data->fresponse = soap->fresponse;
       soap->fresponse = soap_wsa_response;	/* response will be a POST */
     }
@@ -1056,21 +852,6 @@ soap_wsa_sender_fault_subcode(struct soap *soap, const char *faultsubcode, const
 }
 
 /**
-@fn int soap_wsa_sender_fault_subcode_action(struct soap *soap, const char *faultsubcode, const char *faultstring, const char *faultdetail, const char *action)
-@brief Sets sender SOAP Fault (sub)code for server fault response.
-@param soap context
-@param[in] faultsubcode sub code string
-@param[in] faultstring fault string
-@param[in] faultdetail detail string
-@param[in] action WS-Addressing action string
-@return SOAP_FAULT
-*/
-int
-soap_wsa_sender_fault_subcode_action(struct soap *soap, const char *faultsubcode, const char *faultstring, const char *faultdetail, const char *action)
-{ return soap_wsa_fault_subcode_action(soap, 1, faultsubcode, faultstring, faultdetail, action);
-}
-
-/**
 @fn int soap_wsa_receiver_fault_subcode(struct soap *soap, const char *faultsubcode, const char *faultstring, const char *faultdetail)
 @brief Sets receiver SOAP Fault (sub)code for server fault response.
 @param soap context
@@ -1082,21 +863,6 @@ soap_wsa_sender_fault_subcode_action(struct soap *soap, const char *faultsubcode
 int
 soap_wsa_receiver_fault_subcode(struct soap *soap, const char *faultsubcode, const char *faultstring, const char *faultdetail)
 { return soap_wsa_fault_subcode(soap, 0, faultsubcode, faultstring, faultdetail);
-}
-
-/**
-@fn int soap_wsa_receiver_fault_subcode_action(struct soap *soap, const char *faultsubcode, const char *faultstring, const char *faultdetail, const char *action)
-@brief Sets receiver SOAP Fault (sub)code for server fault response.
-@param soap context
-@param[in] faultsubcode sub code string
-@param[in] faultstring fault string
-@param[in] faultdetail detail string
-@param[in] action WS-Addressing action string
-@return SOAP_FAULT
-*/
-int
-soap_wsa_receiver_fault_subcode_action(struct soap *soap, const char *faultsubcode, const char *faultstring, const char *faultdetail, const char *action)
-{ return soap_wsa_fault_subcode_action(soap, 0, faultsubcode, faultstring, faultdetail, action);
 }
 
 /**
@@ -1143,7 +909,7 @@ soap_wsa_receiver_fault(struct soap *soap, const char *faultstring, const char *
 int
 soap_wsa_check_fault(struct soap *soap, SOAP_WSA(FaultCodesType) *fault, const char **info)
 { if (soap->error && soap->fault && soap->fault->SOAP_ENV__Code)
-  { const char *code = soap_check_faultsubcode(soap);
+  { const char *code = *soap_faultsubcode(soap);
     if (code)
     { SOAP_WSA__(soap_s2,FaultCodesType)(soap, code, fault);
       if (info)
@@ -1201,7 +967,7 @@ soap_wsa_check_fault(struct soap *soap, char **fault)
 int
 soap_wsa_check_fault(struct soap *soap, SOAP_WSA(FaultSubcodeValues) *fault)
 { if (soap->error && soap->fault && soap->fault->SOAP_ENV__Code)
-  { const char *code = soap_check_faultsubcode(soap);
+  { const char *code = *soap_faultsubcode(soap);
     if (code)
     { SOAP_WSA__(soap_s2,FaultSubcodeValues)(soap, code, fault);
       return soap->error;
@@ -1226,6 +992,7 @@ soap_wsa_error(struct soap *soap, SOAP_WSA(FaultCodesType) fault, const char *in
   /* populate the SOAP Fault as per WS-Addressing spec */
   switch (fault)
   { case SOAP_WSA(InvalidAddressingHeader):
+      soap_wsa_sender_fault_subcode(soap, code, "A header representing a Message Addressing Property is not valid and the message cannot be processed.", NULL);
       soap_faultdetail(soap);
       if (soap->version == 1)
       { soap->fault->detail->__type = SOAP_WSA_(SOAP_TYPE_,ProblemHeaderQName);
@@ -1235,7 +1002,6 @@ soap_wsa_error(struct soap *soap, SOAP_WSA(FaultCodesType) fault, const char *in
       { soap->fault->SOAP_ENV__Detail->__type = SOAP_WSA_(SOAP_TYPE_,ProblemHeaderQName);
         soap->fault->SOAP_ENV__Detail->fault = (void*)info;
       }
-      soap_wsa_sender_fault_subcode(soap, code, "A header representing a Message Addressing Property is not valid and the message cannot be processed.", NULL);
       break;
     case SOAP_WSA(InvalidAddress):
       soap_wsa_sender_fault_subcode(soap, code, "Invalid address.", NULL);
@@ -1256,6 +1022,7 @@ soap_wsa_error(struct soap *soap, SOAP_WSA(FaultCodesType) fault, const char *in
       soap_wsa_sender_fault_subcode(soap, code, "Action and SOAP action of the message do not match.", NULL);
       break;
     case SOAP_WSA(MessageAddressingHeaderRequired):
+      soap_wsa_sender_fault_subcode(soap, code, "A required header representing a Message Addressing Property is not present.", NULL);
       soap_faultdetail(soap);
       if (soap->version == 1)
       { soap->fault->detail->__type = SOAP_WSA_(SOAP_TYPE_,ProblemHeaderQName);
@@ -1265,9 +1032,9 @@ soap_wsa_error(struct soap *soap, SOAP_WSA(FaultCodesType) fault, const char *in
       { soap->fault->SOAP_ENV__Detail->__type = SOAP_WSA_(SOAP_TYPE_,ProblemHeaderQName);
         soap->fault->SOAP_ENV__Detail->fault = (void*)info;
       }
-      soap_wsa_sender_fault_subcode(soap, code, "A required header representing a Message Addressing Property is not present.", NULL);
       break;
     case SOAP_WSA(DestinationUnreachable):
+      soap_wsa_sender_fault_subcode(soap, code, "No route can be determined to reach [destination]", NULL);
       soap_faultdetail(soap);
       if (soap->version == 1)
       { soap->fault->detail->__type = SOAP_WSA_(SOAP_TYPE_,ProblemIRI);
@@ -1277,9 +1044,9 @@ soap_wsa_error(struct soap *soap, SOAP_WSA(FaultCodesType) fault, const char *in
       { soap->fault->SOAP_ENV__Detail->__type = SOAP_WSA_(SOAP_TYPE_,ProblemIRI);
         soap->fault->SOAP_ENV__Detail->fault = (void*)info;
       }
-      soap_wsa_sender_fault_subcode(soap, code, "No route can be determined to reach [destination]", NULL);
       break;
     case SOAP_WSA(ActionNotSupported):
+      soap_wsa_sender_fault_subcode(soap, code, "The [action] cannot be processed at the receiver.", NULL);
       soap_faultdetail(soap);
       if (soap->version == 1)
       { soap->fault->detail->__type = SOAP_WSA_(SOAP_TYPE_,ProblemAction);
@@ -1293,9 +1060,9 @@ soap_wsa_error(struct soap *soap, SOAP_WSA(FaultCodesType) fault, const char *in
         SOAP_WSA_(soap_default_,ProblemAction)(soap, (SOAP_WSA_(,ProblemAction)*)soap->fault->SOAP_ENV__Detail->fault);
         ((SOAP_WSA_(,ProblemAction)*)soap->fault->SOAP_ENV__Detail->fault)->Action = (char*)info;
       }
-      soap_wsa_sender_fault_subcode(soap, code, "The [action] cannot be processed at the receiver.", NULL);
       break;
     case SOAP_WSA(EndpointUnavailable):
+      soap_wsa_receiver_fault_subcode(soap, code, "The endpoint is unable to process the message at this time.", NULL);
       soap_faultdetail(soap);
       if (soap->version == 1)
       { soap->fault->detail->__type = SOAP_WSA_(SOAP_TYPE_,ProblemIRI);
@@ -1305,7 +1072,6 @@ soap_wsa_error(struct soap *soap, SOAP_WSA(FaultCodesType) fault, const char *in
       { soap->fault->SOAP_ENV__Detail->__type = SOAP_WSA_(SOAP_TYPE_,ProblemIRI);
         soap->fault->SOAP_ENV__Detail->fault = (void*)info;
       }
-      soap_wsa_receiver_fault_subcode(soap, code, "The endpoint is unable to process the message at this time.", NULL);
       break;
     default:
       break;
@@ -1391,8 +1157,6 @@ soap_wsa_init(struct soap *soap, struct soap_wsa_data *data)
   data->fseterror = soap->fseterror;
   soap->fheader = soap_wsa_header;
   soap->fseterror = soap_wsa_set_error;
-  data->fresponse = NULL;
-  data->fdisconnect = NULL;
   return SOAP_OK;
 }
 
@@ -1480,24 +1244,7 @@ soap_wsa_response(struct soap *soap, int status, size_t count)
   if (!data)
     return SOAP_PLUGIN_ERROR;
   soap->fresponse = data->fresponse;	/* reset (HTTP response) */
-  data->fdisconnect = soap->fdisconnect;
-  soap->fdisconnect = soap_wsa_disconnect; /* to accept HTTP 202 */
   return soap->fpost(soap, soap_strdup(soap, soap->endpoint), soap->host, soap->port, soap->path, soap->action, count);
-}
-
-/**
-@fn int soap_wsa_disconnect(struct soap *soap)
-@brief Accepts HTTP 202 response upon HTTP POST response relay
-@param soap context
-*/
-static int
-soap_wsa_disconnect(struct soap *soap)
-{ struct soap_wsa_data *data = (struct soap_wsa_data*)soap_lookup_plugin(soap, soap_wsa_id);
-  DBGFUN("soap_wsa_disconnect");
-  if (!data)
-    return SOAP_PLUGIN_ERROR;
-  soap->fdisconnect = data->fdisconnect; /* reset */
-  return soap_recv_empty_response(soap);
 }
 
 /******************************************************************************\

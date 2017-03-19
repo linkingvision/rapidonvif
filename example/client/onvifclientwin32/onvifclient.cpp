@@ -1,3 +1,26 @@
+/** <!--
+ *
+ *  Copyright (C) 2017 veyesys support@veyesys.com
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  If you would like this software to be made available to you under an 
+ *  alternate commercial license please email support@veyesys.com 
+ *  for more information.
+ *
+ * -->
+ */
 // onvifclient.cpp : Defines the entry point for the console application.
 //
 
@@ -9,9 +32,9 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	int ret;
 	/* 192.168.1.1 is the NVT, 192.168.1.234 is the NVC */
-	string url = "http://192.168.1.1/onvif/device_service";
+	string url = "http://192.168.22.100/onvif/device_service";
 	/* Below is where to receive the event */
-	string eventNotify = "http://192.168.1.234:9090/subscription-2";
+	string eventNotify = "http://192.168.22.123:9091/subscription-2";
 	string user = "admin";
 	string pass =  "admin";
 	OnvifClientDevice onvifDevice(url, user, pass);
@@ -66,13 +89,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	onvifEvent.Subscribe(eventNotify);
 	
-	OnvifClientEventNotify notify(soap_new());
+	OnvifClientEventNotify notify;
 	
-    if ((ret = soap_bind(&notify, NULL, 9090, 100) == SOAP_INVALID_SOCKET ) ) 
+    	if (notify.bind(NULL, 9091, 100) == SOAP_INVALID_SOCKET )
 	{
-        printf("OnvifClientEventNotify::soap_bind Binding on %d port failed", 9090);
-        return 0;
-    }
+	        printf("OnvifClientEventNotify::soap_bind Binding on %d port failed", 9090);
+	        return 0;
+    	}
 	int timeStart = time(NULL);
 	int currentTime = 0;
 
@@ -85,18 +108,18 @@ int _tmain(int argc, _TCHAR* argv[])
 			onvifEvent.Renew();
 		}
 		//printf("soap_accept accepting\n");
-		if( (ret = soap_accept(&notify)) == SOAP_INVALID_SOCKET) {
-			//printf("soap_accept accepting timeout\n");
+		if( notify.accept() == SOAP_INVALID_SOCKET) {
+			printf("soap_accept accepting timeout\n");
 			continue;
 		}
-
-        if ( (soap_begin_serve(&notify)) != SOAP_OK) {
-            printf("soap_begin_serve serve %d failed", ret);
-            continue;
+		ret = notify.serve();
+		if (ret != SOAP_OK) {
+			printf("soap_begin_serve serve %d failed\n", ret);
+            		continue;
         }
 
-        ret = notify.dispatch();
-        continue;
+        	ret = notify.dispatch();
+        	continue;
 	}
 	return 0;
 }

@@ -70,3 +70,6 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 */
 
 extern typedef long long xsd__duration; /* duration in ms (1/1000 sec) */
+
+extern const char *soap_xsd__duration2s(struct soap*, const xsd__duration);
+extern int soap_s2xsd__duration(struct soap*, const char*, xsd__duration*);
