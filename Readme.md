@@ -7,8 +7,6 @@
 * Licensing: dual licensed as open source Affero GPL and commercial-use license (available for purchase).
 
 
-[Learn More for License](https://www.gitbook.com/book/xsmart/rapidvmsusermanual/details)
-
 # [Buy](http://veyesys.com/index.html#license) #
 
 
