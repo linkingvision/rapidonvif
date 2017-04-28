@@ -1,0 +1,21 @@
+syntax = "proto3";
+package OnvifCli;
+
+import "onvifclidevice.proto";
+
+
+
+enum OnvifCliCmdType {
+	CLI_CMD_DEV_ZERO = 0;
+	CLI_CMD_DEV_LOGIN_REQ = 1;
+	CLI_CMD_DEV_LOGIN_RESP = 2;
+
+}
+
+message OnvifCliCmd {
+	OnvifCliCmdType type = 1;
+	oneof cmd {
+		OnvifCliDeviceLoginReq loginReq = 2;
+		OnvifCliDeviceLoginResp loginResp = 3;
+	}
+}
