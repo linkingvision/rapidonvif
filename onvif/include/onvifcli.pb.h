@@ -30,6 +30,8 @@
 #include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 #include "onvifclidevice.pb.h"
+#include "onvifclimedia.pb.h"
+#include "onvifcliptz.pb.h"
 // @@protoc_insertion_point(includes)
 class OnvifCliDeviceLoginReq;
 class OnvifCliDeviceLoginReqDefaultTypeInternal;
@@ -37,9 +39,21 @@ extern OnvifCliDeviceLoginReqDefaultTypeInternal _OnvifCliDeviceLoginReq_default
 class OnvifCliDeviceLoginResp;
 class OnvifCliDeviceLoginRespDefaultTypeInternal;
 extern OnvifCliDeviceLoginRespDefaultTypeInternal _OnvifCliDeviceLoginResp_default_instance_;
-class OnvifCliDeviceParam;
-class OnvifCliDeviceParamDefaultTypeInternal;
-extern OnvifCliDeviceParamDefaultTypeInternal _OnvifCliDeviceParam_default_instance_;
+class OnvifCliMediaGetProfilesReq;
+class OnvifCliMediaGetProfilesReqDefaultTypeInternal;
+extern OnvifCliMediaGetProfilesReqDefaultTypeInternal _OnvifCliMediaGetProfilesReq_default_instance_;
+class OnvifCliMediaGetProfilesResp;
+class OnvifCliMediaGetProfilesRespDefaultTypeInternal;
+extern OnvifCliMediaGetProfilesRespDefaultTypeInternal _OnvifCliMediaGetProfilesResp_default_instance_;
+class OnvifCliPTZReq;
+class OnvifCliPTZReqDefaultTypeInternal;
+extern OnvifCliPTZReqDefaultTypeInternal _OnvifCliPTZReq_default_instance_;
+class OnvifCliPTZResp;
+class OnvifCliPTZRespDefaultTypeInternal;
+extern OnvifCliPTZRespDefaultTypeInternal _OnvifCliPTZResp_default_instance_;
+class OnvifCliProfile;
+class OnvifCliProfileDefaultTypeInternal;
+extern OnvifCliProfileDefaultTypeInternal _OnvifCliProfile_default_instance_;
 namespace OnvifCli {
 class OnvifCliCmd;
 class OnvifCliCmdDefaultTypeInternal;
@@ -63,12 +77,16 @@ enum OnvifCliCmdType {
   CLI_CMD_DEV_ZERO = 0,
   CLI_CMD_DEV_LOGIN_REQ = 1,
   CLI_CMD_DEV_LOGIN_RESP = 2,
+  CLI_CMD_MEDIA_GET_PROFILES_REQ = 3,
+  CLI_CMD_MEDIA_GET_PROFILES_RESP = 4,
+  CLI_CMD_PTZ_REQ = 5,
+  CLI_CMD_PTZ_RESP = 6,
   OnvifCliCmdType_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
   OnvifCliCmdType_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
 };
 bool OnvifCliCmdType_IsValid(int value);
 const OnvifCliCmdType OnvifCliCmdType_MIN = CLI_CMD_DEV_ZERO;
-const OnvifCliCmdType OnvifCliCmdType_MAX = CLI_CMD_DEV_LOGIN_RESP;
+const OnvifCliCmdType OnvifCliCmdType_MAX = CLI_CMD_PTZ_RESP;
 const int OnvifCliCmdType_ARRAYSIZE = OnvifCliCmdType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* OnvifCliCmdType_descriptor();
@@ -101,6 +119,10 @@ class OnvifCliCmd : public ::google::protobuf::Message /* @@protoc_insertion_poi
   enum CmdCase {
     kLoginReq = 2,
     kLoginResp = 3,
+    kGetProfileReq = 4,
+    kGetProfileResp = 5,
+    kPtzReq = 6,
+    kPtzResp = 7,
     CMD_NOT_SET = 0,
   };
 
@@ -180,11 +202,51 @@ class OnvifCliCmd : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::OnvifCliDeviceLoginResp* release_loginresp();
   void set_allocated_loginresp(::OnvifCliDeviceLoginResp* loginresp);
 
+  // .OnvifCliMediaGetProfilesReq getProfileReq = 4;
+  bool has_getprofilereq() const;
+  void clear_getprofilereq();
+  static const int kGetProfileReqFieldNumber = 4;
+  const ::OnvifCliMediaGetProfilesReq& getprofilereq() const;
+  ::OnvifCliMediaGetProfilesReq* mutable_getprofilereq();
+  ::OnvifCliMediaGetProfilesReq* release_getprofilereq();
+  void set_allocated_getprofilereq(::OnvifCliMediaGetProfilesReq* getprofilereq);
+
+  // .OnvifCliMediaGetProfilesResp getProfileResp = 5;
+  bool has_getprofileresp() const;
+  void clear_getprofileresp();
+  static const int kGetProfileRespFieldNumber = 5;
+  const ::OnvifCliMediaGetProfilesResp& getprofileresp() const;
+  ::OnvifCliMediaGetProfilesResp* mutable_getprofileresp();
+  ::OnvifCliMediaGetProfilesResp* release_getprofileresp();
+  void set_allocated_getprofileresp(::OnvifCliMediaGetProfilesResp* getprofileresp);
+
+  // .OnvifCliPTZReq ptzReq = 6;
+  bool has_ptzreq() const;
+  void clear_ptzreq();
+  static const int kPtzReqFieldNumber = 6;
+  const ::OnvifCliPTZReq& ptzreq() const;
+  ::OnvifCliPTZReq* mutable_ptzreq();
+  ::OnvifCliPTZReq* release_ptzreq();
+  void set_allocated_ptzreq(::OnvifCliPTZReq* ptzreq);
+
+  // .OnvifCliPTZResp ptzResp = 7;
+  bool has_ptzresp() const;
+  void clear_ptzresp();
+  static const int kPtzRespFieldNumber = 7;
+  const ::OnvifCliPTZResp& ptzresp() const;
+  ::OnvifCliPTZResp* mutable_ptzresp();
+  ::OnvifCliPTZResp* release_ptzresp();
+  void set_allocated_ptzresp(::OnvifCliPTZResp* ptzresp);
+
   CmdCase cmd_case() const;
   // @@protoc_insertion_point(class_scope:OnvifCli.OnvifCliCmd)
  private:
   void set_has_loginreq();
   void set_has_loginresp();
+  void set_has_getprofilereq();
+  void set_has_getprofileresp();
+  void set_has_ptzreq();
+  void set_has_ptzresp();
 
   inline bool has_cmd() const;
   void clear_cmd();
@@ -196,6 +258,10 @@ class OnvifCliCmd : public ::google::protobuf::Message /* @@protoc_insertion_poi
     CmdUnion() {}
     ::OnvifCliDeviceLoginReq* loginreq_;
     ::OnvifCliDeviceLoginResp* loginresp_;
+    ::OnvifCliMediaGetProfilesReq* getprofilereq_;
+    ::OnvifCliMediaGetProfilesResp* getprofileresp_;
+    ::OnvifCliPTZReq* ptzreq_;
+    ::OnvifCliPTZResp* ptzresp_;
   } cmd_;
   mutable int _cached_size_;
   ::google::protobuf::uint32 _oneof_case_[1];
@@ -318,6 +384,198 @@ inline void OnvifCliCmd::set_allocated_loginresp(::OnvifCliDeviceLoginResp* logi
     cmd_.loginresp_ = loginresp;
   }
   // @@protoc_insertion_point(field_set_allocated:OnvifCli.OnvifCliCmd.loginResp)
+}
+
+// .OnvifCliMediaGetProfilesReq getProfileReq = 4;
+inline bool OnvifCliCmd::has_getprofilereq() const {
+  return cmd_case() == kGetProfileReq;
+}
+inline void OnvifCliCmd::set_has_getprofilereq() {
+  _oneof_case_[0] = kGetProfileReq;
+}
+inline void OnvifCliCmd::clear_getprofilereq() {
+  if (has_getprofilereq()) {
+    delete cmd_.getprofilereq_;
+    clear_has_cmd();
+  }
+}
+inline  const ::OnvifCliMediaGetProfilesReq& OnvifCliCmd::getprofilereq() const {
+  // @@protoc_insertion_point(field_get:OnvifCli.OnvifCliCmd.getProfileReq)
+  return has_getprofilereq()
+      ? *cmd_.getprofilereq_
+      : ::OnvifCliMediaGetProfilesReq::default_instance();
+}
+inline ::OnvifCliMediaGetProfilesReq* OnvifCliCmd::mutable_getprofilereq() {
+  if (!has_getprofilereq()) {
+    clear_cmd();
+    set_has_getprofilereq();
+    cmd_.getprofilereq_ = new ::OnvifCliMediaGetProfilesReq;
+  }
+  // @@protoc_insertion_point(field_mutable:OnvifCli.OnvifCliCmd.getProfileReq)
+  return cmd_.getprofilereq_;
+}
+inline ::OnvifCliMediaGetProfilesReq* OnvifCliCmd::release_getprofilereq() {
+  // @@protoc_insertion_point(field_release:OnvifCli.OnvifCliCmd.getProfileReq)
+  if (has_getprofilereq()) {
+    clear_has_cmd();
+    ::OnvifCliMediaGetProfilesReq* temp = cmd_.getprofilereq_;
+    cmd_.getprofilereq_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void OnvifCliCmd::set_allocated_getprofilereq(::OnvifCliMediaGetProfilesReq* getprofilereq) {
+  clear_cmd();
+  if (getprofilereq) {
+    set_has_getprofilereq();
+    cmd_.getprofilereq_ = getprofilereq;
+  }
+  // @@protoc_insertion_point(field_set_allocated:OnvifCli.OnvifCliCmd.getProfileReq)
+}
+
+// .OnvifCliMediaGetProfilesResp getProfileResp = 5;
+inline bool OnvifCliCmd::has_getprofileresp() const {
+  return cmd_case() == kGetProfileResp;
+}
+inline void OnvifCliCmd::set_has_getprofileresp() {
+  _oneof_case_[0] = kGetProfileResp;
+}
+inline void OnvifCliCmd::clear_getprofileresp() {
+  if (has_getprofileresp()) {
+    delete cmd_.getprofileresp_;
+    clear_has_cmd();
+  }
+}
+inline  const ::OnvifCliMediaGetProfilesResp& OnvifCliCmd::getprofileresp() const {
+  // @@protoc_insertion_point(field_get:OnvifCli.OnvifCliCmd.getProfileResp)
+  return has_getprofileresp()
+      ? *cmd_.getprofileresp_
+      : ::OnvifCliMediaGetProfilesResp::default_instance();
+}
+inline ::OnvifCliMediaGetProfilesResp* OnvifCliCmd::mutable_getprofileresp() {
+  if (!has_getprofileresp()) {
+    clear_cmd();
+    set_has_getprofileresp();
+    cmd_.getprofileresp_ = new ::OnvifCliMediaGetProfilesResp;
+  }
+  // @@protoc_insertion_point(field_mutable:OnvifCli.OnvifCliCmd.getProfileResp)
+  return cmd_.getprofileresp_;
+}
+inline ::OnvifCliMediaGetProfilesResp* OnvifCliCmd::release_getprofileresp() {
+  // @@protoc_insertion_point(field_release:OnvifCli.OnvifCliCmd.getProfileResp)
+  if (has_getprofileresp()) {
+    clear_has_cmd();
+    ::OnvifCliMediaGetProfilesResp* temp = cmd_.getprofileresp_;
+    cmd_.getprofileresp_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void OnvifCliCmd::set_allocated_getprofileresp(::OnvifCliMediaGetProfilesResp* getprofileresp) {
+  clear_cmd();
+  if (getprofileresp) {
+    set_has_getprofileresp();
+    cmd_.getprofileresp_ = getprofileresp;
+  }
+  // @@protoc_insertion_point(field_set_allocated:OnvifCli.OnvifCliCmd.getProfileResp)
+}
+
+// .OnvifCliPTZReq ptzReq = 6;
+inline bool OnvifCliCmd::has_ptzreq() const {
+  return cmd_case() == kPtzReq;
+}
+inline void OnvifCliCmd::set_has_ptzreq() {
+  _oneof_case_[0] = kPtzReq;
+}
+inline void OnvifCliCmd::clear_ptzreq() {
+  if (has_ptzreq()) {
+    delete cmd_.ptzreq_;
+    clear_has_cmd();
+  }
+}
+inline  const ::OnvifCliPTZReq& OnvifCliCmd::ptzreq() const {
+  // @@protoc_insertion_point(field_get:OnvifCli.OnvifCliCmd.ptzReq)
+  return has_ptzreq()
+      ? *cmd_.ptzreq_
+      : ::OnvifCliPTZReq::default_instance();
+}
+inline ::OnvifCliPTZReq* OnvifCliCmd::mutable_ptzreq() {
+  if (!has_ptzreq()) {
+    clear_cmd();
+    set_has_ptzreq();
+    cmd_.ptzreq_ = new ::OnvifCliPTZReq;
+  }
+  // @@protoc_insertion_point(field_mutable:OnvifCli.OnvifCliCmd.ptzReq)
+  return cmd_.ptzreq_;
+}
+inline ::OnvifCliPTZReq* OnvifCliCmd::release_ptzreq() {
+  // @@protoc_insertion_point(field_release:OnvifCli.OnvifCliCmd.ptzReq)
+  if (has_ptzreq()) {
+    clear_has_cmd();
+    ::OnvifCliPTZReq* temp = cmd_.ptzreq_;
+    cmd_.ptzreq_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void OnvifCliCmd::set_allocated_ptzreq(::OnvifCliPTZReq* ptzreq) {
+  clear_cmd();
+  if (ptzreq) {
+    set_has_ptzreq();
+    cmd_.ptzreq_ = ptzreq;
+  }
+  // @@protoc_insertion_point(field_set_allocated:OnvifCli.OnvifCliCmd.ptzReq)
+}
+
+// .OnvifCliPTZResp ptzResp = 7;
+inline bool OnvifCliCmd::has_ptzresp() const {
+  return cmd_case() == kPtzResp;
+}
+inline void OnvifCliCmd::set_has_ptzresp() {
+  _oneof_case_[0] = kPtzResp;
+}
+inline void OnvifCliCmd::clear_ptzresp() {
+  if (has_ptzresp()) {
+    delete cmd_.ptzresp_;
+    clear_has_cmd();
+  }
+}
+inline  const ::OnvifCliPTZResp& OnvifCliCmd::ptzresp() const {
+  // @@protoc_insertion_point(field_get:OnvifCli.OnvifCliCmd.ptzResp)
+  return has_ptzresp()
+      ? *cmd_.ptzresp_
+      : ::OnvifCliPTZResp::default_instance();
+}
+inline ::OnvifCliPTZResp* OnvifCliCmd::mutable_ptzresp() {
+  if (!has_ptzresp()) {
+    clear_cmd();
+    set_has_ptzresp();
+    cmd_.ptzresp_ = new ::OnvifCliPTZResp;
+  }
+  // @@protoc_insertion_point(field_mutable:OnvifCli.OnvifCliCmd.ptzResp)
+  return cmd_.ptzresp_;
+}
+inline ::OnvifCliPTZResp* OnvifCliCmd::release_ptzresp() {
+  // @@protoc_insertion_point(field_release:OnvifCli.OnvifCliCmd.ptzResp)
+  if (has_ptzresp()) {
+    clear_has_cmd();
+    ::OnvifCliPTZResp* temp = cmd_.ptzresp_;
+    cmd_.ptzresp_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void OnvifCliCmd::set_allocated_ptzresp(::OnvifCliPTZResp* ptzresp) {
+  clear_cmd();
+  if (ptzresp) {
+    set_has_ptzresp();
+    cmd_.ptzresp_ = ptzresp;
+  }
+  // @@protoc_insertion_point(field_set_allocated:OnvifCli.OnvifCliCmd.ptzResp)
 }
 
 inline bool OnvifCliCmd::has_cmd() const {

@@ -1,14 +1,6 @@
 
 syntax = "proto3";
 
-message OnvifCliDeviceParam {
-	string strName = 1;
-	string strPasswd = 2;
-	
-	//Url of the onvif device endpoint
-	string strUrl = 3;
-}
-
 message OnvifCliDeviceLoginReq {
 	string strUserName = 1;
 	string strPasswd = 2;
@@ -20,6 +12,8 @@ message OnvifCliDeviceLoginReq {
 message OnvifCliDeviceLoginResp {
 	string strHandle = 1;
 	bool bLogined = 2;
+	bool bHasPTZ = 3;
+	bool bHasEvent = 4;
 }
 
 

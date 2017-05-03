@@ -16,8 +16,6 @@
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
-class OnvifCliDeviceParamDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<OnvifCliDeviceParam> {
-} _OnvifCliDeviceParam_default_instance_;
 class OnvifCliDeviceLoginReqDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<OnvifCliDeviceLoginReq> {
 } _OnvifCliDeviceLoginReq_default_instance_;
 class OnvifCliDeviceLoginRespDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<OnvifCliDeviceLoginResp> {
@@ -28,18 +26,11 @@ namespace protobuf_onvifclidevice_2eproto {
 
 namespace {
 
-::google::protobuf::Metadata file_level_metadata[3];
+::google::protobuf::Metadata file_level_metadata[2];
 
 }  // namespace
 
 const ::google::protobuf::uint32 TableStruct::offsets[] = {
-  ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OnvifCliDeviceParam, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OnvifCliDeviceParam, strname_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OnvifCliDeviceParam, strpasswd_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OnvifCliDeviceParam, strurl_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OnvifCliDeviceLoginReq, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -53,16 +44,16 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   ~0u,  // no _oneof_case_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OnvifCliDeviceLoginResp, strhandle_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OnvifCliDeviceLoginResp, blogined_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OnvifCliDeviceLoginResp, bhasptz_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(OnvifCliDeviceLoginResp, bhasevent_),
 };
 
 static const ::google::protobuf::internal::MigrationSchema schemas[] = {
-  { 0, -1, sizeof(OnvifCliDeviceParam)},
-  { 7, -1, sizeof(OnvifCliDeviceLoginReq)},
-  { 14, -1, sizeof(OnvifCliDeviceLoginResp)},
+  { 0, -1, sizeof(OnvifCliDeviceLoginReq)},
+  { 7, -1, sizeof(OnvifCliDeviceLoginResp)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&_OnvifCliDeviceParam_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_OnvifCliDeviceLoginReq_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_OnvifCliDeviceLoginResp_default_instance_),
 };
@@ -85,25 +76,22 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 3);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 2);
 }
 
 }  // namespace
 
 void TableStruct::Shutdown() {
-  _OnvifCliDeviceParam_default_instance_.Shutdown();
-  delete file_level_metadata[0].reflection;
   _OnvifCliDeviceLoginReq_default_instance_.Shutdown();
-  delete file_level_metadata[1].reflection;
+  delete file_level_metadata[0].reflection;
   _OnvifCliDeviceLoginResp_default_instance_.Shutdown();
-  delete file_level_metadata[2].reflection;
+  delete file_level_metadata[1].reflection;
 }
 
 void TableStruct::InitDefaultsImpl() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::internal::InitProtobufDefaults();
-  _OnvifCliDeviceParam_default_instance_.DefaultConstruct();
   _OnvifCliDeviceLoginReq_default_instance_.DefaultConstruct();
   _OnvifCliDeviceLoginResp_default_instance_.DefaultConstruct();
 }
@@ -115,16 +103,15 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\024onvifclidevice.proto\"I\n\023OnvifCliDevice"
-      "Param\022\017\n\007strName\030\001 \001(\t\022\021\n\tstrPasswd\030\002 \001("
-      "\t\022\016\n\006strUrl\030\003 \001(\t\"P\n\026OnvifCliDeviceLogin"
-      "Req\022\023\n\013strUserName\030\001 \001(\t\022\021\n\tstrPasswd\030\002 "
-      "\001(\t\022\016\n\006strUrl\030\003 \001(\t\">\n\027OnvifCliDeviceLog"
-      "inResp\022\021\n\tstrHandle\030\001 \001(\t\022\020\n\010bLogined\030\002 "
-      "\001(\010b\006proto3"
+      "\n\024onvifclidevice.proto\"P\n\026OnvifCliDevice"
+      "LoginReq\022\023\n\013strUserName\030\001 \001(\t\022\021\n\tstrPass"
+      "wd\030\002 \001(\t\022\016\n\006strUrl\030\003 \001(\t\"b\n\027OnvifCliDevi"
+      "ceLoginResp\022\021\n\tstrHandle\030\001 \001(\t\022\020\n\010bLogin"
+      "ed\030\002 \001(\010\022\017\n\007bHasPTZ\030\003 \001(\010\022\021\n\tbHasEvent\030\004"
+      " \001(\010b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 251);
+      descriptor, 212);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "onvifclidevice.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -143,503 +130,6 @@ struct StaticDescriptorInitializer {
 
 }  // namespace protobuf_onvifclidevice_2eproto
 
-
-// ===================================================================
-
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int OnvifCliDeviceParam::kStrNameFieldNumber;
-const int OnvifCliDeviceParam::kStrPasswdFieldNumber;
-const int OnvifCliDeviceParam::kStrUrlFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-
-OnvifCliDeviceParam::OnvifCliDeviceParam()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
-    protobuf_onvifclidevice_2eproto::InitDefaults();
-  }
-  SharedCtor();
-  // @@protoc_insertion_point(constructor:OnvifCliDeviceParam)
-}
-OnvifCliDeviceParam::OnvifCliDeviceParam(const OnvifCliDeviceParam& from)
-  : ::google::protobuf::Message(),
-      _internal_metadata_(NULL),
-      _cached_size_(0) {
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  strname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.strname().size() > 0) {
-    strname_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.strname_);
-  }
-  strpasswd_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.strpasswd().size() > 0) {
-    strpasswd_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.strpasswd_);
-  }
-  strurl_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.strurl().size() > 0) {
-    strurl_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.strurl_);
-  }
-  // @@protoc_insertion_point(copy_constructor:OnvifCliDeviceParam)
-}
-
-void OnvifCliDeviceParam::SharedCtor() {
-  strname_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  strpasswd_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  strurl_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  _cached_size_ = 0;
-}
-
-OnvifCliDeviceParam::~OnvifCliDeviceParam() {
-  // @@protoc_insertion_point(destructor:OnvifCliDeviceParam)
-  SharedDtor();
-}
-
-void OnvifCliDeviceParam::SharedDtor() {
-  strname_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  strpasswd_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  strurl_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-
-void OnvifCliDeviceParam::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* OnvifCliDeviceParam::descriptor() {
-  protobuf_onvifclidevice_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_onvifclidevice_2eproto::file_level_metadata[0].descriptor;
-}
-
-const OnvifCliDeviceParam& OnvifCliDeviceParam::default_instance() {
-  protobuf_onvifclidevice_2eproto::InitDefaults();
-  return *internal_default_instance();
-}
-
-OnvifCliDeviceParam* OnvifCliDeviceParam::New(::google::protobuf::Arena* arena) const {
-  OnvifCliDeviceParam* n = new OnvifCliDeviceParam;
-  if (arena != NULL) {
-    arena->Own(n);
-  }
-  return n;
-}
-
-void OnvifCliDeviceParam::Clear() {
-// @@protoc_insertion_point(message_clear_start:OnvifCliDeviceParam)
-  strname_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  strpasswd_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  strurl_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-
-bool OnvifCliDeviceParam::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:OnvifCliDeviceParam)
-  for (;;) {
-    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
-    tag = p.first;
-    if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // string strName = 1;
-      case 1: {
-        if (tag == 10u) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_strname()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->strname().data(), this->strname().length(),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "OnvifCliDeviceParam.strName"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      // string strPasswd = 2;
-      case 2: {
-        if (tag == 18u) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_strpasswd()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->strpasswd().data(), this->strpasswd().length(),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "OnvifCliDeviceParam.strPasswd"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      // string strUrl = 3;
-      case 3: {
-        if (tag == 26u) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_strurl()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->strurl().data(), this->strurl().length(),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "OnvifCliDeviceParam.strUrl"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      default: {
-      handle_unusual:
-        if (tag == 0 ||
-            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          goto success;
-        }
-        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
-        break;
-      }
-    }
-  }
-success:
-  // @@protoc_insertion_point(parse_success:OnvifCliDeviceParam)
-  return true;
-failure:
-  // @@protoc_insertion_point(parse_failure:OnvifCliDeviceParam)
-  return false;
-#undef DO_
-}
-
-void OnvifCliDeviceParam::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:OnvifCliDeviceParam)
-  // string strName = 1;
-  if (this->strname().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->strname().data(), this->strname().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "OnvifCliDeviceParam.strName");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      1, this->strname(), output);
-  }
-
-  // string strPasswd = 2;
-  if (this->strpasswd().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->strpasswd().data(), this->strpasswd().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "OnvifCliDeviceParam.strPasswd");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      2, this->strpasswd(), output);
-  }
-
-  // string strUrl = 3;
-  if (this->strurl().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->strurl().data(), this->strurl().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "OnvifCliDeviceParam.strUrl");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      3, this->strurl(), output);
-  }
-
-  // @@protoc_insertion_point(serialize_end:OnvifCliDeviceParam)
-}
-
-::google::protobuf::uint8* OnvifCliDeviceParam::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic;  // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:OnvifCliDeviceParam)
-  // string strName = 1;
-  if (this->strname().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->strname().data(), this->strname().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "OnvifCliDeviceParam.strName");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        1, this->strname(), target);
-  }
-
-  // string strPasswd = 2;
-  if (this->strpasswd().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->strpasswd().data(), this->strpasswd().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "OnvifCliDeviceParam.strPasswd");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->strpasswd(), target);
-  }
-
-  // string strUrl = 3;
-  if (this->strurl().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->strurl().data(), this->strurl().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "OnvifCliDeviceParam.strUrl");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->strurl(), target);
-  }
-
-  // @@protoc_insertion_point(serialize_to_array_end:OnvifCliDeviceParam)
-  return target;
-}
-
-size_t OnvifCliDeviceParam::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:OnvifCliDeviceParam)
-  size_t total_size = 0;
-
-  // string strName = 1;
-  if (this->strname().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->strname());
-  }
-
-  // string strPasswd = 2;
-  if (this->strpasswd().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->strpasswd());
-  }
-
-  // string strUrl = 3;
-  if (this->strurl().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->strurl());
-  }
-
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = cached_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void OnvifCliDeviceParam::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:OnvifCliDeviceParam)
-  GOOGLE_DCHECK_NE(&from, this);
-  const OnvifCliDeviceParam* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const OnvifCliDeviceParam>(
-          &from);
-  if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:OnvifCliDeviceParam)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:OnvifCliDeviceParam)
-    MergeFrom(*source);
-  }
-}
-
-void OnvifCliDeviceParam::MergeFrom(const OnvifCliDeviceParam& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:OnvifCliDeviceParam)
-  GOOGLE_DCHECK_NE(&from, this);
-  _internal_metadata_.MergeFrom(from._internal_metadata_);
-  if (from.strname().size() > 0) {
-
-    strname_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.strname_);
-  }
-  if (from.strpasswd().size() > 0) {
-
-    strpasswd_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.strpasswd_);
-  }
-  if (from.strurl().size() > 0) {
-
-    strurl_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.strurl_);
-  }
-}
-
-void OnvifCliDeviceParam::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:OnvifCliDeviceParam)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void OnvifCliDeviceParam::CopyFrom(const OnvifCliDeviceParam& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:OnvifCliDeviceParam)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool OnvifCliDeviceParam::IsInitialized() const {
-  return true;
-}
-
-void OnvifCliDeviceParam::Swap(OnvifCliDeviceParam* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
-void OnvifCliDeviceParam::InternalSwap(OnvifCliDeviceParam* other) {
-  strname_.Swap(&other->strname_);
-  strpasswd_.Swap(&other->strpasswd_);
-  strurl_.Swap(&other->strurl_);
-  std::swap(_cached_size_, other->_cached_size_);
-}
-
-::google::protobuf::Metadata OnvifCliDeviceParam::GetMetadata() const {
-  protobuf_onvifclidevice_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_onvifclidevice_2eproto::file_level_metadata[0];
-}
-
-#if PROTOBUF_INLINE_NOT_IN_HEADERS
-// OnvifCliDeviceParam
-
-// string strName = 1;
-void OnvifCliDeviceParam::clear_strname() {
-  strname_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-const ::std::string& OnvifCliDeviceParam::strname() const {
-  // @@protoc_insertion_point(field_get:OnvifCliDeviceParam.strName)
-  return strname_.GetNoArena();
-}
-void OnvifCliDeviceParam::set_strname(const ::std::string& value) {
-  
-  strname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:OnvifCliDeviceParam.strName)
-}
-#if LANG_CXX11
-void OnvifCliDeviceParam::set_strname(::std::string&& value) {
-  
-  strname_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:OnvifCliDeviceParam.strName)
-}
-#endif
-void OnvifCliDeviceParam::set_strname(const char* value) {
-  
-  strname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:OnvifCliDeviceParam.strName)
-}
-void OnvifCliDeviceParam::set_strname(const char* value, size_t size) {
-  
-  strname_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:OnvifCliDeviceParam.strName)
-}
-::std::string* OnvifCliDeviceParam::mutable_strname() {
-  
-  // @@protoc_insertion_point(field_mutable:OnvifCliDeviceParam.strName)
-  return strname_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-::std::string* OnvifCliDeviceParam::release_strname() {
-  // @@protoc_insertion_point(field_release:OnvifCliDeviceParam.strName)
-  
-  return strname_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-void OnvifCliDeviceParam::set_allocated_strname(::std::string* strname) {
-  if (strname != NULL) {
-    
-  } else {
-    
-  }
-  strname_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), strname);
-  // @@protoc_insertion_point(field_set_allocated:OnvifCliDeviceParam.strName)
-}
-
-// string strPasswd = 2;
-void OnvifCliDeviceParam::clear_strpasswd() {
-  strpasswd_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-const ::std::string& OnvifCliDeviceParam::strpasswd() const {
-  // @@protoc_insertion_point(field_get:OnvifCliDeviceParam.strPasswd)
-  return strpasswd_.GetNoArena();
-}
-void OnvifCliDeviceParam::set_strpasswd(const ::std::string& value) {
-  
-  strpasswd_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:OnvifCliDeviceParam.strPasswd)
-}
-#if LANG_CXX11
-void OnvifCliDeviceParam::set_strpasswd(::std::string&& value) {
-  
-  strpasswd_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:OnvifCliDeviceParam.strPasswd)
-}
-#endif
-void OnvifCliDeviceParam::set_strpasswd(const char* value) {
-  
-  strpasswd_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:OnvifCliDeviceParam.strPasswd)
-}
-void OnvifCliDeviceParam::set_strpasswd(const char* value, size_t size) {
-  
-  strpasswd_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:OnvifCliDeviceParam.strPasswd)
-}
-::std::string* OnvifCliDeviceParam::mutable_strpasswd() {
-  
-  // @@protoc_insertion_point(field_mutable:OnvifCliDeviceParam.strPasswd)
-  return strpasswd_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-::std::string* OnvifCliDeviceParam::release_strpasswd() {
-  // @@protoc_insertion_point(field_release:OnvifCliDeviceParam.strPasswd)
-  
-  return strpasswd_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-void OnvifCliDeviceParam::set_allocated_strpasswd(::std::string* strpasswd) {
-  if (strpasswd != NULL) {
-    
-  } else {
-    
-  }
-  strpasswd_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), strpasswd);
-  // @@protoc_insertion_point(field_set_allocated:OnvifCliDeviceParam.strPasswd)
-}
-
-// string strUrl = 3;
-void OnvifCliDeviceParam::clear_strurl() {
-  strurl_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-const ::std::string& OnvifCliDeviceParam::strurl() const {
-  // @@protoc_insertion_point(field_get:OnvifCliDeviceParam.strUrl)
-  return strurl_.GetNoArena();
-}
-void OnvifCliDeviceParam::set_strurl(const ::std::string& value) {
-  
-  strurl_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:OnvifCliDeviceParam.strUrl)
-}
-#if LANG_CXX11
-void OnvifCliDeviceParam::set_strurl(::std::string&& value) {
-  
-  strurl_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:OnvifCliDeviceParam.strUrl)
-}
-#endif
-void OnvifCliDeviceParam::set_strurl(const char* value) {
-  
-  strurl_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:OnvifCliDeviceParam.strUrl)
-}
-void OnvifCliDeviceParam::set_strurl(const char* value, size_t size) {
-  
-  strurl_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:OnvifCliDeviceParam.strUrl)
-}
-::std::string* OnvifCliDeviceParam::mutable_strurl() {
-  
-  // @@protoc_insertion_point(field_mutable:OnvifCliDeviceParam.strUrl)
-  return strurl_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-::std::string* OnvifCliDeviceParam::release_strurl() {
-  // @@protoc_insertion_point(field_release:OnvifCliDeviceParam.strUrl)
-  
-  return strurl_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-void OnvifCliDeviceParam::set_allocated_strurl(::std::string* strurl) {
-  if (strurl != NULL) {
-    
-  } else {
-    
-  }
-  strurl_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), strurl);
-  // @@protoc_insertion_point(field_set_allocated:OnvifCliDeviceParam.strUrl)
-}
-
-#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
 // ===================================================================
 
@@ -702,7 +192,7 @@ void OnvifCliDeviceLoginReq::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* OnvifCliDeviceLoginReq::descriptor() {
   protobuf_onvifclidevice_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_onvifclidevice_2eproto::file_level_metadata[1].descriptor;
+  return protobuf_onvifclidevice_2eproto::file_level_metadata[0].descriptor;
 }
 
 const OnvifCliDeviceLoginReq& OnvifCliDeviceLoginReq::default_instance() {
@@ -974,7 +464,7 @@ void OnvifCliDeviceLoginReq::InternalSwap(OnvifCliDeviceLoginReq* other) {
 
 ::google::protobuf::Metadata OnvifCliDeviceLoginReq::GetMetadata() const {
   protobuf_onvifclidevice_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_onvifclidevice_2eproto::file_level_metadata[1];
+  return protobuf_onvifclidevice_2eproto::file_level_metadata[0];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1143,6 +633,8 @@ void OnvifCliDeviceLoginReq::set_allocated_strurl(::std::string* strurl) {
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int OnvifCliDeviceLoginResp::kStrHandleFieldNumber;
 const int OnvifCliDeviceLoginResp::kBLoginedFieldNumber;
+const int OnvifCliDeviceLoginResp::kBHasPTZFieldNumber;
+const int OnvifCliDeviceLoginResp::kBHasEventFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 OnvifCliDeviceLoginResp::OnvifCliDeviceLoginResp()
@@ -1162,13 +654,16 @@ OnvifCliDeviceLoginResp::OnvifCliDeviceLoginResp(const OnvifCliDeviceLoginResp& 
   if (from.strhandle().size() > 0) {
     strhandle_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.strhandle_);
   }
-  blogined_ = from.blogined_;
+  ::memcpy(&blogined_, &from.blogined_,
+    reinterpret_cast<char*>(&bhasevent_) -
+    reinterpret_cast<char*>(&blogined_) + sizeof(bhasevent_));
   // @@protoc_insertion_point(copy_constructor:OnvifCliDeviceLoginResp)
 }
 
 void OnvifCliDeviceLoginResp::SharedCtor() {
   strhandle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  blogined_ = false;
+  ::memset(&blogined_, 0, reinterpret_cast<char*>(&bhasevent_) -
+    reinterpret_cast<char*>(&blogined_) + sizeof(bhasevent_));
   _cached_size_ = 0;
 }
 
@@ -1188,7 +683,7 @@ void OnvifCliDeviceLoginResp::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* OnvifCliDeviceLoginResp::descriptor() {
   protobuf_onvifclidevice_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_onvifclidevice_2eproto::file_level_metadata[2].descriptor;
+  return protobuf_onvifclidevice_2eproto::file_level_metadata[1].descriptor;
 }
 
 const OnvifCliDeviceLoginResp& OnvifCliDeviceLoginResp::default_instance() {
@@ -1207,7 +702,8 @@ OnvifCliDeviceLoginResp* OnvifCliDeviceLoginResp::New(::google::protobuf::Arena*
 void OnvifCliDeviceLoginResp::Clear() {
 // @@protoc_insertion_point(message_clear_start:OnvifCliDeviceLoginResp)
   strhandle_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  blogined_ = false;
+  ::memset(&blogined_, 0, reinterpret_cast<char*>(&bhasevent_) -
+    reinterpret_cast<char*>(&blogined_) + sizeof(bhasevent_));
 }
 
 bool OnvifCliDeviceLoginResp::MergePartialFromCodedStream(
@@ -1242,6 +738,32 @@ bool OnvifCliDeviceLoginResp::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &blogined_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // bool bHasPTZ = 3;
+      case 3: {
+        if (tag == 24u) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &bhasptz_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // bool bHasEvent = 4;
+      case 4: {
+        if (tag == 32u) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &bhasevent_)));
         } else {
           goto handle_unusual;
         }
@@ -1287,6 +809,16 @@ void OnvifCliDeviceLoginResp::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(2, this->blogined(), output);
   }
 
+  // bool bHasPTZ = 3;
+  if (this->bhasptz() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(3, this->bhasptz(), output);
+  }
+
+  // bool bHasEvent = 4;
+  if (this->bhasevent() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(4, this->bhasevent(), output);
+  }
+
   // @@protoc_insertion_point(serialize_end:OnvifCliDeviceLoginResp)
 }
 
@@ -1310,6 +842,16 @@ void OnvifCliDeviceLoginResp::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(2, this->blogined(), target);
   }
 
+  // bool bHasPTZ = 3;
+  if (this->bhasptz() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(3, this->bhasptz(), target);
+  }
+
+  // bool bHasEvent = 4;
+  if (this->bhasevent() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(4, this->bhasevent(), target);
+  }
+
   // @@protoc_insertion_point(serialize_to_array_end:OnvifCliDeviceLoginResp)
   return target;
 }
@@ -1327,6 +869,16 @@ size_t OnvifCliDeviceLoginResp::ByteSizeLong() const {
 
   // bool bLogined = 2;
   if (this->blogined() != 0) {
+    total_size += 1 + 1;
+  }
+
+  // bool bHasPTZ = 3;
+  if (this->bhasptz() != 0) {
+    total_size += 1 + 1;
+  }
+
+  // bool bHasEvent = 4;
+  if (this->bhasevent() != 0) {
     total_size += 1 + 1;
   }
 
@@ -1363,6 +915,12 @@ void OnvifCliDeviceLoginResp::MergeFrom(const OnvifCliDeviceLoginResp& from) {
   if (from.blogined() != 0) {
     set_blogined(from.blogined());
   }
+  if (from.bhasptz() != 0) {
+    set_bhasptz(from.bhasptz());
+  }
+  if (from.bhasevent() != 0) {
+    set_bhasevent(from.bhasevent());
+  }
 }
 
 void OnvifCliDeviceLoginResp::CopyFrom(const ::google::protobuf::Message& from) {
@@ -1390,12 +948,14 @@ void OnvifCliDeviceLoginResp::Swap(OnvifCliDeviceLoginResp* other) {
 void OnvifCliDeviceLoginResp::InternalSwap(OnvifCliDeviceLoginResp* other) {
   strhandle_.Swap(&other->strhandle_);
   std::swap(blogined_, other->blogined_);
+  std::swap(bhasptz_, other->bhasptz_);
+  std::swap(bhasevent_, other->bhasevent_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
 ::google::protobuf::Metadata OnvifCliDeviceLoginResp::GetMetadata() const {
   protobuf_onvifclidevice_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_onvifclidevice_2eproto::file_level_metadata[2];
+  return protobuf_onvifclidevice_2eproto::file_level_metadata[1];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1465,6 +1025,34 @@ void OnvifCliDeviceLoginResp::set_blogined(bool value) {
   
   blogined_ = value;
   // @@protoc_insertion_point(field_set:OnvifCliDeviceLoginResp.bLogined)
+}
+
+// bool bHasPTZ = 3;
+void OnvifCliDeviceLoginResp::clear_bhasptz() {
+  bhasptz_ = false;
+}
+bool OnvifCliDeviceLoginResp::bhasptz() const {
+  // @@protoc_insertion_point(field_get:OnvifCliDeviceLoginResp.bHasPTZ)
+  return bhasptz_;
+}
+void OnvifCliDeviceLoginResp::set_bhasptz(bool value) {
+  
+  bhasptz_ = value;
+  // @@protoc_insertion_point(field_set:OnvifCliDeviceLoginResp.bHasPTZ)
+}
+
+// bool bHasEvent = 4;
+void OnvifCliDeviceLoginResp::clear_bhasevent() {
+  bhasevent_ = false;
+}
+bool OnvifCliDeviceLoginResp::bhasevent() const {
+  // @@protoc_insertion_point(field_get:OnvifCliDeviceLoginResp.bHasEvent)
+  return bhasevent_;
+}
+void OnvifCliDeviceLoginResp::set_bhasevent(bool value) {
+  
+  bhasevent_ = value;
+  // @@protoc_insertion_point(field_set:OnvifCliDeviceLoginResp.bHasEvent)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
