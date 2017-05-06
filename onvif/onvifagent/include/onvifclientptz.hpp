@@ -191,7 +191,7 @@ inline int OnvifClientPTZ::RelativeMove(_tptz__RelativeMoveResponse &relMoveResp
 inline int OnvifClientPTZ::ContinuousMove(_tptz__ContinuousMoveResponse &ContMoveResponse, tt__PTZSpeed &Speed, LONG64 &Timeout, string profileToken)
 {
 	if(!m_bHasContinuousPTMove || !m_bHasContinuousZoomMove) {
-		cout << "Error, device does not support Continuous movement" << endl;
+		//cout << "Error, device does not support Continuous movement" << endl;
 		//return -1;
 	}
 
@@ -211,7 +211,7 @@ inline int OnvifClientPTZ::ContinuousMove(_tptz__ContinuousMoveResponse &ContMov
 	_tptz__ContinuousMove ContMoveReq;
 	ContMoveReq.ProfileToken = profileToken;
 	ContMoveReq.Velocity = &Speed;
-	ContMoveReq.Timeout = &Timeout;
+	ContMoveReq.Timeout = NULL;
 
 	return ptzProxy.ContinuousMove(&ContMoveReq,&ContMoveResponse);
 }
