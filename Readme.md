@@ -2,8 +2,22 @@
 
 ![](https://github.com/veyesys/rapidonvif/blob/rapidonvif/onvif/doc/rapidonvif.png)
 
+### Get RTSP URL & Control PTZ within 10 line code
+	std::string url = "http://192.168.22.100/onvif/device_service";
+	std::string user = "admin";
+	std::string pass =  "admin";
+
+	OnvifAgentC agent(user, pass, url);
+	OnvifAgentCProfileMap pProfiles;
+
+	agent.Login();
+	pProfiles.clear();
+	agent.GetProfiles(pProfiles);
+	
+	agent.PTZAction(pProfiles.begin()->first,AGENT_PTZ_ZOOM_IN, 0.5);
+
 ### Features list ###
-	ONVIF profile S/G
+	ONVIF profile S
 
 #### License ####
 * Licensing: dual licensed as open source Affero GPL and commercial-use license (available for purchase).

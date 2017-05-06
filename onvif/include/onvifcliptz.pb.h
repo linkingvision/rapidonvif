@@ -143,15 +143,29 @@ class OnvifCliPTZReq : public ::google::protobuf::Message /* @@protoc_insertion_
 
   // accessors -------------------------------------------------------
 
-  // .OnvifCliPTZCmdType cmd = 1;
+  // string token = 1;
+  void clear_token();
+  static const int kTokenFieldNumber = 1;
+  const ::std::string& token() const;
+  void set_token(const ::std::string& value);
+  #if LANG_CXX11
+  void set_token(::std::string&& value);
+  #endif
+  void set_token(const char* value);
+  void set_token(const char* value, size_t size);
+  ::std::string* mutable_token();
+  ::std::string* release_token();
+  void set_allocated_token(::std::string* token);
+
+  // .OnvifCliPTZCmdType cmd = 2;
   void clear_cmd();
-  static const int kCmdFieldNumber = 1;
+  static const int kCmdFieldNumber = 2;
   ::OnvifCliPTZCmdType cmd() const;
   void set_cmd(::OnvifCliPTZCmdType value);
 
-  // float speed = 2;
+  // float speed = 3;
   void clear_speed();
-  static const int kSpeedFieldNumber = 2;
+  static const int kSpeedFieldNumber = 3;
   float speed() const;
   void set_speed(float value);
 
@@ -159,6 +173,7 @@ class OnvifCliPTZReq : public ::google::protobuf::Message /* @@protoc_insertion_
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr token_;
   int cmd_;
   float speed_;
   mutable int _cached_size_;
@@ -255,7 +270,59 @@ class OnvifCliPTZResp : public ::google::protobuf::Message /* @@protoc_insertion
 #if !PROTOBUF_INLINE_NOT_IN_HEADERS
 // OnvifCliPTZReq
 
-// .OnvifCliPTZCmdType cmd = 1;
+// string token = 1;
+inline void OnvifCliPTZReq::clear_token() {
+  token_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& OnvifCliPTZReq::token() const {
+  // @@protoc_insertion_point(field_get:OnvifCliPTZReq.token)
+  return token_.GetNoArena();
+}
+inline void OnvifCliPTZReq::set_token(const ::std::string& value) {
+  
+  token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:OnvifCliPTZReq.token)
+}
+#if LANG_CXX11
+inline void OnvifCliPTZReq::set_token(::std::string&& value) {
+  
+  token_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:OnvifCliPTZReq.token)
+}
+#endif
+inline void OnvifCliPTZReq::set_token(const char* value) {
+  
+  token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:OnvifCliPTZReq.token)
+}
+inline void OnvifCliPTZReq::set_token(const char* value, size_t size) {
+  
+  token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:OnvifCliPTZReq.token)
+}
+inline ::std::string* OnvifCliPTZReq::mutable_token() {
+  
+  // @@protoc_insertion_point(field_mutable:OnvifCliPTZReq.token)
+  return token_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* OnvifCliPTZReq::release_token() {
+  // @@protoc_insertion_point(field_release:OnvifCliPTZReq.token)
+  
+  return token_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void OnvifCliPTZReq::set_allocated_token(::std::string* token) {
+  if (token != NULL) {
+    
+  } else {
+    
+  }
+  token_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), token);
+  // @@protoc_insertion_point(field_set_allocated:OnvifCliPTZReq.token)
+}
+
+// .OnvifCliPTZCmdType cmd = 2;
 inline void OnvifCliPTZReq::clear_cmd() {
   cmd_ = 0;
 }
@@ -269,7 +336,7 @@ inline void OnvifCliPTZReq::set_cmd(::OnvifCliPTZCmdType value) {
   // @@protoc_insertion_point(field_set:OnvifCliPTZReq.cmd)
 }
 
-// float speed = 2;
+// float speed = 3;
 inline void OnvifCliPTZReq::clear_speed() {
   speed_ = 0;
 }

@@ -11,8 +11,9 @@ enum OnvifCliPTZCmdType {
 }
 
 message OnvifCliPTZReq {
-	OnvifCliPTZCmdType cmd = 1;
-	float speed = 2;
+	string token = 1;
+	OnvifCliPTZCmdType cmd = 2;
+	float speed = 3;
 }
 
 message OnvifCliPTZResp {

@@ -15,6 +15,18 @@
 #include "onvifclimedia.pb.h"
 #include <google/protobuf/util/json_util.h>
 
+typedef enum
+{
+	AGENT_PTZ_UP = 0,
+	AGENT_PTZ_DOWN,
+	AGENT_PTZ_LEFT,
+	AGENT_PTZ_RIGHT,
+	AGENT_PTZ_ZOOM_IN,
+	AGENT_PTZ_ZOOM_OUT,
+	AGENT_PTZ_STOP,
+	AGENT_PTZ_LAST
+} OnvifCAgentPtzAct;
+
 class OnvifAgentCProfile
 {
 public:
@@ -42,7 +54,7 @@ class  OnvifAgentC : public WebSocketClient
 public:
 	OnvifAgentC(std::string strUser, std::string strPasswd, std::string strUrl)
 	:WebSocketClient("localhost", "10000", "/onvifagentcli"), m_bLogin(false), 
-	m_strUser(strUser), m_strPasswd(strPasswd), m_strUrl(strUrl)
+	m_strUser(strUser), m_strPasswd(strPasswd), m_strUrl(strUrl), m_bHasPTZ(false)
 	{
 		/* Connect to the remote server */
 		Connect();
@@ -121,6 +133,7 @@ public:
 		
 		m_bLogin = pResp.blogined();
 		m_strHandle = pResp.strhandle();
+		m_bHasPTZ = pResp.bhasptz();
 		return m_bLogin;
 		
 	}
@@ -217,6 +230,62 @@ public:
 		return pResp.bgotprofiles();
 	}
 
+	bool PTZAction(std::string strToken, OnvifCAgentPtzAct act, float speed)
+	{
+		if (m_bHasPTZ == false)
+		{
+			return false;
+		}
+		/* not logined */
+		if (m_bLogin == false)
+		{
+			return false;
+		}
+		OnvifCli::OnvifCliCmd cmd;
+		cmd.set_type(OnvifCli::CLI_CMD_PTZ_REQ);
+		OnvifCliPTZReq * req = new OnvifCliPTZReq;
+		//req->set_strstrhandle(m_strHandle);
+		req->set_token(strToken);
+		req->set_speed(speed);
+		req->set_cmd((OnvifCliPTZCmdType)act);
+		cmd.set_allocated_ptzreq(req);
+		std::string strMsg;
+		::google::protobuf::util::Status status = 
+			::google::protobuf::util::MessageToJsonString(cmd, &strMsg);
+		if (!status.ok())
+		{
+			return false;
+		}
+		long long lastMsgId = 0;
+		/* only lock here */
+		{
+			std::lock_guard<std::mutex> guard(m_lock);
+			lastMsgId = m_msgId;
+		}
+		
+		if (SendMsg(strMsg) == false)
+		{
+			return false;
+		}
+
+		OnvifCli::OnvifCliCmd respCmd;
+
+		if (GetRespMsg(lastMsgId, respCmd) == false)
+		{
+			return false;
+		}
+
+		if (!respCmd.has_ptzresp())
+		{
+			return false;
+		}
+		const OnvifCliPTZResp& pResp =  respCmd.ptzresp();
+		
+		printf("%s %d websocket got ptz resp %d\n", __FILE__, __LINE__,  pResp.bret());
+
+		return pResp.bret();
+	}
+
 private:
 	bool m_bLogin;
 	std::string m_strUser;
@@ -224,6 +293,7 @@ private:
 	std::string m_strUrl;
 	OnvifCli::OnvifCliCmd m_lastCmd;
 	std::string m_strHandle;
+	bool m_bHasPTZ;
 };
 
 
