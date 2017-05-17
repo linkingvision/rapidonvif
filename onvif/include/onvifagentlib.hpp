@@ -20,7 +20,7 @@ class  OnvifAgentLib
 {
 public:
 	OnvifAgentLib()
-	:m_process(NULL), m_watch(NULL)
+	:m_process(NULL), m_watch(NULL), m_bExit(false)
 	{
 		Initialize();
 	}
@@ -42,7 +42,11 @@ public:
 	}
 	bool UnInitialize()
 	{
-		std::lock_guard<std::mutex> guard(m_lock);
+		//std::lock_guard<std::mutex> guard(m_lock);
+		m_bExit = true;
+
+		m_watch->join();
+		delete m_watch;
 		if (m_process)
 		{
 			m_process->kill(true);
@@ -63,7 +67,7 @@ public:
 	void WatchThread1()
 
 	{
-		while(1)
+		while(!m_bExit)
 		{
 			{
 				std::lock_guard<std::mutex> guard(m_lock);
@@ -75,9 +79,9 @@ public:
 				m_process = new Process(strCmd);
 			}
 		
-			while(1)
+			while(!m_bExit)
 			{
-				std::chrono::milliseconds dura( 1000 );
+				std::chrono::milliseconds dura(20);
 				std::this_thread::sleep_for( dura );
 
 				if (m_process->get_exit_status() == 0)
@@ -97,6 +101,7 @@ private:
 	Process *m_process;
 	std::thread *m_watch;
 	std::mutex m_lock;
+	bool m_bExit;
 };
 
 

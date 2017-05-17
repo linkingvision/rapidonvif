@@ -219,7 +219,7 @@ void Process::close_stdin() {
 
 //Based on http://stackoverflow.com/a/1173396
 void Process::kill(bool force) {
-  std::lock_guard<std::mutex> lock(close_mutex);
+  //std::lock_guard<std::mutex> lock(close_mutex);
   if(data.id>0 && !closed) {
     HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if(snapshot) {
