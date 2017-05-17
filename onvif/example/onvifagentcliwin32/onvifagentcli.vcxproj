@@ -76,20 +76,21 @@ copy /y ..\..\..\3rdparty\live555\output\Debug\live555.dll  ..\..\prj_win32\Debu
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WITH_OPENSSL;WITH_DOM;WITH_PURE_VIRTUAL;USE_WEBSOCKET;USE_IPV6;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\include;..\..\..\3rdparty\openssl-win\openssl-win32\include\;..\..\..\3rdparty\protobuf\cmake\win32\include;..\..\..\3rdparty\civetweb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\..\3rdparty\openssl-win\openssl-win32\include\;..\..\..\3rdparty\protobuf\cmake\win32\include;..\..\..\3rdparty\civetweb\include;..\..\include\video;..\..\..\3rdparty\live555\live555\include\;..\..\..\3rdparty\live555\BasicUsageEnvironment\include\;..\..\..\3rdparty\live555\groupsock\include\;..\..\..\3rdparty\live555\liveMedia\include\;..\..\..\3rdparty\live555\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\..\win32\Release;..\..\..\3rdparty\openssl-win\openssl-win32\lib;..\..\..\3rdparty\protobuf\cmake\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libeay32.lib;ssleay32.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\win32\Release;..\..\..\3rdparty\openssl-win\openssl-win32\lib;..\..\..\3rdparty\protobuf\cmake\win32\lib;..\..\..\3rdparty\live555\output\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libeay32.lib;ssleay32.lib;libprotobuf.lib;live555.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /y ..\..\..\3rdparty\openssl-win\openssl-win32\lib\libeay32.dll  ..\..\prj_win32\Release\
 copy /y ..\..\..\3rdparty\openssl-win\openssl-win32\lib\ssleay32.dll  ..\..\prj_win32\Release\
-copy /y ..\..\output\Release\onvifagent.exe  ..\..\prj_win32\Release\</Command>
+copy /y ..\..\output\Release\onvifagent.exe  ..\..\prj_win32\Release\
+copy /y ..\..\..\3rdparty\live555\output\Release\live555.dll  ..\..\prj_win32\Release\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
