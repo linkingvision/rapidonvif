@@ -2,6 +2,11 @@
 
 ![](https://github.com/veyesys/rapidonvif/blob/rapidonvif/onvif/doc/rapidonvif.png)
 
+### Windows ###
+	1. Install VS2013
+	2. Build onvif\onvifagent\win32\onvifagent.sln
+	3. Build onvif\prj_win32\onvifagentlib.sln
+
 ### Get RTSP URL & Control PTZ within 10 line code
 	std::string url = "http://192.168.22.100/onvif/device_service";
 	std::string user = "admin";
