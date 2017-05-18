@@ -5,6 +5,10 @@
 #include <windows.h>
 #endif
 
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+
 #include <string.h>
 #include <vector>
 #include <iostream>
@@ -23,34 +27,20 @@ public:
 	:m_process(NULL), m_watch(NULL), m_bExit(false)
 	{
 		Initialize();
+#ifndef _WIN32
+		usleep(500 * 1000);
+#endif
 	}
 	~OnvifAgentLib()
 	{	
 		UnInitialize();
 	}
 public:
-	bool Initialize()
+	bool Initialize();
+	bool UnInitialize();
+	bool SetExit()
 	{
-#if defined(_WIN32) && !defined(__SYMBIAN32__)
-		WSADATA data;
-		WSAStartup(MAKEWORD(2, 2), &data);
-#endif 	/* _WIN32 && !__SYMBIAN32__ */
-		/* Start the agent process */
-		m_watch = new std::thread(OnvifAgentLib::WatchThread, this);
-
-		return true;
-	}
-	bool UnInitialize()
-	{
-		//std::lock_guard<std::mutex> guard(m_lock);
 		m_bExit = true;
-
-		m_watch->join();
-		delete m_watch;
-		if (m_process)
-		{
-			m_process->kill(true);
-		}
 		return true;
 	}
 public:
@@ -75,7 +65,11 @@ public:
 				{
 					delete m_process;
 				}
+#ifdef _WIN32
 				Process::string_type strCmd = L"onvifagent.exe";
+#else
+				Process::string_type strCmd = "onvifagent";
+#endif
 				m_process = new Process(strCmd);
 			}
 		

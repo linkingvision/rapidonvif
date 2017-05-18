@@ -52,7 +52,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;WITH_OPENSSL;WITH_DOM;WITH_PURE_VIRTUAL;USE_WEBSOCKET;USE_IPV6;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\include;..\..\..\3rdparty\openssl-win\openssl-win32\include\;..\..\..\3rdparty\protobuf\cmake\win32\include;..\..\..\3rdparty\civetweb\include;..\..\include\video;..\..\..\3rdparty\live555\live555\include\;..\..\..\3rdparty\live555\BasicUsageEnvironment\include\;..\..\..\3rdparty\live555\groupsock\include\;..\..\..\3rdparty\live555\liveMedia\include\;..\..\..\3rdparty\live555\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\..\3rdparty\openssl-win\openssl-win32\include\;..\..\..\3rdparty\protobuf\cmake\win32\include;..\..\..\3rdparty\civetweb\include;..\..\include\video;..\..\..\3rdparty\live555\live555\include\;..\..\..\3rdparty\live555\BasicUsageEnvironment\include\;..\..\..\3rdparty\live555\groupsock\include\;..\..\..\3rdparty\live555\liveMedia\include\;..\..\..\3rdparty\live555\UsageEnvironment\include;..\..\example;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -76,7 +76,7 @@ copy /y ..\..\..\3rdparty\live555\output\Debug\live555.dll  ..\..\prj_win32\Debu
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WITH_OPENSSL;WITH_DOM;WITH_PURE_VIRTUAL;USE_WEBSOCKET;USE_IPV6;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\include;..\..\..\3rdparty\openssl-win\openssl-win32\include\;..\..\..\3rdparty\protobuf\cmake\win32\include;..\..\..\3rdparty\civetweb\include;..\..\include\video;..\..\..\3rdparty\live555\live555\include\;..\..\..\3rdparty\live555\BasicUsageEnvironment\include\;..\..\..\3rdparty\live555\groupsock\include\;..\..\..\3rdparty\live555\liveMedia\include\;..\..\..\3rdparty\live555\UsageEnvironment\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\..\3rdparty\openssl-win\openssl-win32\include\;..\..\..\3rdparty\protobuf\cmake\win32\include;..\..\..\3rdparty\civetweb\include;..\..\include\video;..\..\..\3rdparty\live555\live555\include\;..\..\..\3rdparty\live555\BasicUsageEnvironment\include\;..\..\..\3rdparty\live555\groupsock\include\;..\..\..\3rdparty\live555\liveMedia\include\;..\..\..\3rdparty\live555\UsageEnvironment\include;..\..\example;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

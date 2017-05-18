@@ -32,7 +32,7 @@ ifeq ($(TARGET_OS),)
 endif
 
 BUILD_DIR     = ./lib/linux/
-CFLAGS	=  -DLINUX -fPIC -DUSE_WEBSOCKET 
+CFLAGS	=  -DLINUX -Os -fPIC -DUSE_WEBSOCKET 
 CFLAGS	+= -DWITH_OPENSSL -DWITH_DOM -DWITH_PURE_VIRTUAL -DWITH_NONAMESPACES 
 
 CPPFLAGS += -std=c++11
@@ -132,7 +132,8 @@ $(LIBS): $(LIB_SOURCES)
 	$(AR) $(ARFLAGS) $(LIBS) $?
 	
 $(CAPP): $(APP_SOURCES) 
-	$(CPP) -o $@ $(CFLAGS)  $(APP_SOURCES) $(LIBS) $(LDFLAGS)	
+	$(CPP) -o $@ $(CFLAGS)  $(APP_SOURCES) $(LIBS) $(LDFLAGS)
+	cp $(CAPP) $(VE_PATH)/output/$(VE_INSTALL_DIR)/bin/
 
 example_:
 	#make -C example/server/onvifserverlinux
