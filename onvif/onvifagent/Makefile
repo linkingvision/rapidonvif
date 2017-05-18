@@ -102,8 +102,11 @@ IFLAGS += -I./src/
 
 LDFLAGS+= -L$(VE_PATH)/output/$(VE_INSTALL_DIR)/lib
 
-LDFLAGS +=  -g -L../../3rdparty/openssl-linux/ -lprotobuf  -lssl -lcrypto -lpthread -ldl -lstdc++ -lm -lcrypt 
+LDFLAGS +=  -g -L../../3rdparty/openssl-linux/ -lprotobuf  -lssl -lcrypto -lpthread -ldl -lstdc++ -lm
 
+ifneq ($(strip $(VE_OS)), macos)
+LDFLAGS += -Wl,-Bdynamic -lcrypt 
+endif
 
 LIB_SOURCES += ../../3rdparty/civetweb/src/CivetServer.o\
 		src/onvifagent.o\

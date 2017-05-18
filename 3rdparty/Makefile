@@ -1,13 +1,14 @@
 -include ../common.mk
 
 ifeq ($(strip $(PRJ_CROSS)), )
+ifeq ($(strip $(VE_OS)), macos)
+all:  protobuf_build openssl_build_macos live555_build
+else
 all:  protobuf_build openssl_build live555_build
 endif
-
-ifneq ($(strip $(PRJ_CROSS)), )
+else
 all:protobuf_build_cross openssl_build_cross live555_build
 endif
-
 
 clean:distclean
 distclean: protobuf_clean openssl_clean live555_clean

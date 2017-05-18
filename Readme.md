@@ -20,6 +20,12 @@
 	Change VE_PATH in the rules.mk
 	$source ./rules-macos.mk
 	$make 
+	if there has below error, make liblive555.so same dir with onvifagentcli, cp ../lib/liblive555.so . 
+		users-Mac:macos-10.12-64bit user$ ./bin/onvifagentcli 
+		dyld: Library not loaded: liblive555.so
+		Referenced from: /Users/user/rapidonvif/output/macos-10.12-64bit/./bin/onvifagentcli
+		Reason: image not found
+		Abort trap: 6
 
 ### Get RTSP URL & Control PTZ within 10 line code
 	std::string url = "http://192.168.22.100/onvif/device_service";

@@ -1,4 +1,4 @@
-export VE_PATH=/Users/user/rapidvms
+export VE_PATH=/Users/user/rapidonvif
 
 export VE_OS=macos
 export VE_ARCH=`uname -m | sed 's/x86_//;s/i[3-6]86/32/'`

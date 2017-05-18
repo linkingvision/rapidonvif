@@ -71,7 +71,7 @@ BUILD_RESOURCES =
 
 LIVE555=3rdparty/live555/
 
-CFLAGS += -std=c++11 -Wall -Wextra -Wshadow -Wformat-security -Winit-self -Wmissing-prototypes -O2 -D$(TARGET_OS) -Iinclude 
+CFLAGS +=  -Wall -Wextra -Wshadow -Wformat-security -Winit-self -Wmissing-prototypes -O2 -D$(TARGET_OS) -Iinclude 
 CFLAGS += -DUSE_WEBSOCKET
 CFLAGS+= -I$(VE_PATH)/output/$(VE_INSTALL_DIR)/include\
 			-I./include\
@@ -81,9 +81,16 @@ CFLAGS+= -I$(VE_PATH)/output/$(VE_INSTALL_DIR)/include\
 			-I../$(LIVE555)/liveMedia/include -I../$(LIVE555)/UsageEnvironment/include\
 			-I../$(LIVE555)/live555/include/\
 			-I../3rdparty/civetweb/include/
+			
+CXXFLAGS += -std=c++11
 		
 LDFLAGS+= -L$(VE_PATH)/output/$(VE_INSTALL_DIR)/lib
-LDFLAGS+= -llive555 -lprotobuf  -lssl -lcrypto -lpthread -ldl -lstdc++ -lm -lcrypt
+LDFLAGS+= -llive555 -lprotobuf  -lssl -lcrypto -lpthread -ldl -lstdc++ -lm
+
+ifneq ($(strip $(VE_OS)), macos)
+LDFLAGS += -Wl,-Bdynamic -lcrypt 
+endif
+
 
 LIBS = -lpthread -lm
 
