@@ -6,6 +6,17 @@
 	1. Install VS2013
 	2. Build onvif\onvifagent\win32\onvifagent.sln
 	3. Build onvif\prj_win32\onvifagentlib.sln
+	
+### Linux ###
+	Change VE_PATH in the rules.mk
+	$source ./rules.mk
+	$make
+	
+### macOS ###
+	Install xcode
+	Change VE_PATH in the rules.mk
+	$source ./rules-macos.mk
+	$make 
 
 ### Get RTSP URL & Control PTZ within 10 line code
 	std::string url = "http://192.168.22.100/onvif/device_service";
