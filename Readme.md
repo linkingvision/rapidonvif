@@ -8,9 +8,12 @@
 	3. Build onvif\prj_win32\onvifagentlib.sln
 	
 ### Linux ###
+	install cmake 
 	Change VE_PATH in the rules.mk
 	$source ./rules.mk
 	$make
+	Start the demo client
+	$./output/Ubuntu-16.04-64bit/bin/onvifagentcli  
 	
 ### macOS ###
 	Install xcode
