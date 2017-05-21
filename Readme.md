@@ -8,7 +8,7 @@
 	3. Build onvif\prj_win32\onvifagentlib.sln
 	
 ### Linux ###
-	install cmake 
+	Install cmake 
 	Change VE_PATH in the rules.mk
 	$source ./rules.mk
 	$make
@@ -17,6 +17,7 @@
 	
 ### macOS ###
 	Install xcode
+	Install cmake 
 	Change VE_PATH in the rules.mk
 	$source ./rules-macos.mk
 	$make 

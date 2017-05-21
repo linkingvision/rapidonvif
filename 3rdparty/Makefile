@@ -7,7 +7,7 @@ else
 all:  protobuf_build openssl_build live555_build
 endif
 else
-all:protobuf_build_cross openssl_build_cross live555_build
+all:protobuf_build_cross openssl_build_cross live555_build_cross
 endif
 
 clean:distclean
@@ -21,7 +21,7 @@ protobuf_build:
 	if  test -e $(VE_PATH)/output/$(VE_INSTALL_DIR)/lib64/libprotobuf.a; then cp $(VE_PATH)/output/$(VE_INSTALL_DIR)/lib64/*  $(VE_PATH)/output/$(VE_INSTALL_DIR)/lib/; fi;
 
 protobuf_build_cross:
-	cd protobuf; chmod +x ./configure ; make distclean; ./configure --prefix=$(VE_PATH)/output/host/
+	cd protobuf; chmod +x ./autogen.sh; ./autogen.sh; chmod +x ./configure ; make distclean; ./configure --prefix=$(VE_PATH)/output/host/
 	$(MAKE) -C protobuf; 
 	$(MAKE) -C protobuf install; 
 	cd protobuf; chmod +x ./configure ; make distclean; ./configure --host=$(VE_CROSS_TOOL) CC=$(CC) CXX=$(CPP)  --prefix=$(VE_PATH)/output/$(VE_INSTALL_DIR)/ --with-protoc=$(VE_PATH)/output/host/bin/protoc
@@ -46,6 +46,12 @@ openssl_build_cross:
 live555_build:
 	cd live555; chmod +x genMakefiles; ./genMakefiles linux-64bit; 
 	$(MAKE) -C live555;
+	$(MAKE) -C live555/live555
+	cp ./live555/live555/liblive555.so $(VE_PATH)/output/$(VE_INSTALL_DIR)/lib
+	
+live555_build_cross:
+	cd live555; chmod +x genMakefiles; ./genMakefiles armlinux; 
+	$(MAKE) -C live555 CROSS_COMPILE=$(VE_CROSS_COMPILER);
 	$(MAKE) -C live555/live555
 	cp ./live555/live555/liblive555.so $(VE_PATH)/output/$(VE_INSTALL_DIR)/lib
 
