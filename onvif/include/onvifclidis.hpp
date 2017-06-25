@@ -1,4 +1,26 @@
-
+/** <!--
+ *
+ *  Copyright (C) 2017 veyesys support@veyesys.com
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  If you would like this software to be made available to you under an 
+ *  alternate commercial license please email support@veyesys.com 
+ *  for more information.
+ *
+ * -->
+ */
 #ifndef __ONVIF_DIS_CLIENT__
 #define __ONVIF_DIS_CLIENT__
 
@@ -15,7 +37,7 @@
 
 #if (defined(_WIN32) || defined(_WIN64))
 #pragma warning(disable:4996)
-#include <ObjBase.h>
+//#include <ObjBase.h>
 #include <Iphlpapi.h>
 #pragma comment(lib, "Iphlpapi.lib")
 #pragma comment(lib, "WS2_32.lib")
@@ -32,37 +54,6 @@ public:
 			astring strModel, astring strONVIFAddr){return false;}
 };
 
-
-/* Each interface will have a interface,
-TODO process blow case
-QList<QHostAddress> DeviceSearcher::getHostAddress()
-{
-	QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
-	QList<QHostAddress> ipAddressesIPV4;
-	
-	// skip IPV6 address
-	QList<QHostAddress>::iterator i;
-	for(i=ipAddressesList.begin();i!=ipAddressesList.end();i++)
-	{
-		std::string ip = (*i).toString().toStdString();
-		size_t p1 = ip.find("127.");
-		if (p1 != std::string::npos) 
-		{
-			continue;
-		}
-		size_t p2 = ip.find(":");
-		if (p2 != std::string::npos) 
-		{
-			continue;
-		}
-		ipAddressesIPV4.append(*i);
-	}
-	
-	return ipAddressesIPV4;
-}
-
-
-*/
 class  OnvifDisClient
 {
 public:
@@ -81,6 +72,7 @@ public:
 	static std::vector<std::string> GetInterfaces()
 	{
 		std::vector<std::string> vecNetInterfaces;
+		std::vector<std::string> ipv4;
 		
 #if (defined(_WIN32) || defined(_WIN64))
 		ULONG ulLen = 0;
@@ -88,11 +80,11 @@ public:
 
 		GetAdaptersInfo(lpAdapterInfo, &ulLen);
 		if (0 == ulLen)
-		    return -1;
+			return ipv4;
 
 		lpAdapterInfo = (PIP_ADAPTER_INFO)(new CHAR[ulLen]);
 		if (NULL == lpAdapterInfo)
-		    return -1;
+			return ipv4;
 
 		memset(lpAdapterInfo, 0, ulLen);
 		ULONG uRet = GetAdaptersInfo(lpAdapterInfo, &ulLen);
@@ -163,7 +155,24 @@ public:
 		}
 		freeifaddrs(ifList);
 #endif
-		return vecNetInterfaces;
+		
+		std::vector<std::string>::iterator it;
+		for (it = vecNetInterfaces.begin(); it != vecNetInterfaces.end(); ++it)
+		{
+			string ip = *it;
+			size_t p1 = ip.find("127.");
+			if (p1 != std::string::npos) 
+			{
+				continue;
+			}
+			size_t p2 = ip.find(":");
+			if (p2 != std::string::npos) 
+			{
+				continue;
+			}
+			ipv4.push_back(*it);
+		}
+		return ipv4;
 	}
 
 public:
@@ -192,6 +201,89 @@ public:
 			}
 		}
 		return true;
+	}
+
+	void GetIPAndPort(astring &str, astring & ip, astring & port, astring & onvifAddr)
+	{
+	       astring strItem = "http://";
+		size_t pos = 0;
+		while (1)
+		{
+		       strItem = "http://";
+			size_t p1 = str.find(strItem, pos);
+			if (p1 == string::npos) return;
+			size_t posIP = p1 + strItem.length();
+			strItem = "/";
+			size_t p2 = str.find(strItem,posIP);
+			if (p2 == string::npos) return;
+			string strGetIP = str.substr(posIP, p2 - posIP);
+			if (strGetIP.find(".") == string::npos || 
+				strGetIP.find("169") == 0)
+			{
+				/* IPV6 address */
+				pos = p2;
+				continue;
+			}
+			string strGetOnvifAddr;
+			strItem = "http://";
+			if (str.find(strItem, p2) == string::npos)
+			{
+				strGetOnvifAddr = str .substr(p2);
+			}else
+			{
+				strItem = " ";
+				size_t p3 = str.find(strItem, p2);
+				if (p3 == string::npos) return;
+				strGetOnvifAddr = str.substr(p2, p3 - p2);
+			}
+
+		       string strPort = "80";
+			size_t posPort = strGetIP.find_first_of(":");
+			if (posPort != std::string::npos) 
+			{
+				strPort = strGetIP.substr(posPort + 1);
+				string strIPTemp = strGetIP.substr(0, posPort);
+				strGetIP = strIPTemp;
+			}
+			ip = strGetIP;
+			port = strPort;
+			onvifAddr = strGetOnvifAddr;
+			strItem = "http://";
+			if (str.find(strItem, p2) == string::npos)
+			{
+				break;
+			}else
+			{
+				pos = p2;
+				continue;			
+			}
+		}
+		
+	}
+
+	void GetHardwareModel(astring &str, astring & hdModel)
+	{
+		size_t pos1= 0;
+		size_t pos2 = 0;	
+		std::string strItem;
+		strItem = "hardware/";
+		pos2 = str.find(strItem);
+
+		string sHardware = "unknown";
+		if (pos2 != string::npos)
+		{
+			size_t posHardware =  pos2 + strItem.length();
+			strItem = "onvif";
+			pos1 = str.find(strItem,pos2);
+			
+			if (pos1 != string::npos)
+			{
+				sHardware =  str.substr(posHardware,pos1 - posHardware);
+				transform(sHardware.begin(), sHardware.end(),sHardware.begin(),(int(*)(int))toupper);
+			}
+			
+		}
+		hdModel = sHardware;
 	}
 
 	bool SendProbe(int nFd)
@@ -257,8 +349,91 @@ public:
 		return true;
 	}
 
+	bool GetAttr(std::string &strMsg, std::string strAttr, std::string &strGot)
+	{
+		// Attr begin & end
+		std::string strAddr2 = strAttr + ">";
+		const char *wsddAttr_b = strAddr2.c_str();//"<wsdd:Attr>";
+		const char *wsddAttr_e = "</";//"</wsdd:Attr>";
+		const char * pBuff = strMsg.c_str();
+		char *find_Attr_b = strstr((char *)pBuff, wsddAttr_b);
+		char *find_Attr_e =strstr(find_Attr_b, wsddAttr_e);
+		if(find_Attr_b==NULL || wsddAttr_e==NULL){
+			return  false;
+		}
+
+		//get the a Attr
+		int len_b = strlen(wsddAttr_b);              
+		int len = find_Attr_e - find_Attr_b - len_b;  
+
+		std::string strTemp;
+		strTemp.resize(len + 1);
+		char *tmp = &strTemp[0];
+		memset(tmp, 0, len+1);
+		for(int i=0;i<len;i++)
+		{
+			tmp[i] = find_Attr_b[len_b+i];
+			/*
+			if(find_Attr_b[len_b+i] != ' ')
+			{        
+				tmp[i] = find_Attr_b[len_b+i] ;   
+			}else
+			{
+				len = i ;
+				break;
+			}
+			*/
+		}
+		
+		std::string strNew(tmp, len);
+		strGot = strNew;
+		
+		return true;
+	}
+
 	bool ProcessRecvMsg(std::string &strMsg)
 	{
+		std::string strAddr;
+		std::string strTypes;
+		std::string strScopes;
+		if (GetAttr(strMsg, "XAddrs", strAddr) == false)
+		{
+			return false;
+		}
+		if (GetAttr(strMsg, "Types", strTypes) == false)
+		{
+			return false;
+		}
+		if (GetAttr(strMsg, "Scopes", strScopes) == false)
+		{
+			return false;
+		}
+
+		transform(strAddr.begin(), strAddr.end(), strAddr.begin(), (int(*)(int))tolower);
+		transform(strTypes.begin(), strTypes.end(), strTypes.begin(), (int(*)(int))tolower);
+		transform(strScopes.begin(), strScopes.end(), strScopes.begin(), (int(*)(int))tolower);
+
+		if (strTypes.find("network_video_storage") != string::npos)
+		{
+			printf("[ONVIF]: it is a NVS device\n");
+			return true;
+		} 
+		size_t pos1 = strTypes.find("networkvideotransmitter");
+		printf( "[ONVIF]: Searched ip %s\n", strAddr.c_str());
+		if (pos1 == string::npos)
+		{
+			return true;
+		}	
+
+		astring ip = "192.168.0.1";
+		astring port = "80";
+		astring hdModel = "unknown";
+		astring OnvifAddr = "/onvif/device_service";
+		GetIPAndPort(strAddr,  ip, port, OnvifAddr);
+		GetHardwareModel(strScopes, hdModel);
+
+		m_pNotify.NewCam(ip, port, hdModel, OnvifAddr);
+		
 		return true;
 	}
 	
@@ -269,7 +444,7 @@ public:
 
 		if (pThread)
 		{
-			return pThread->WatchThread1();
+			return pThread->DisThread1();
 		}
 		return;
 	}
@@ -284,14 +459,18 @@ public:
 		}
 
 		struct sockaddr_in addr;
-		int on = 1;
+		char on = 1;
 		memset(&addr, 0, sizeof(addr));
 		addr.sin_port = 0;
 		addr.sin_family = AF_INET;
 
 		setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+		unsigned requestedSize = 1024 * 1024;
+		 int sizeSize = sizeof requestedSize;
+		setsockopt(fd, SOL_SOCKET, SO_RCVBUF, (char*)&requestedSize, sizeSize);
+		
 		addr.sin_addr.s_addr = inet_addr(m_strAddr.c_str());
-		if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)))
+		if (::bind(fd, (struct sockaddr *)&addr, sizeof(addr)))
 		{
 			printf("bind error");
 			return;
@@ -340,7 +519,73 @@ private:
 	bool m_bStarted;
 	bool m_bExit;
 	std::string m_strAddr;
-	
+};
+
+typedef std::map<std::string, OnvifDisClient *> OnvifDisClientMap;
+
+class  OnvifDisClientMgr: public CamSearchNotify
+{
+public:
+	OnvifDisClientMgr(CamSearchNotify & pNotify)
+	: m_pNotify(pNotify), m_bStarted(false)
+	{
+		
+	}
+	~OnvifDisClientMgr()
+	{
+		Stop();
+	}
+public:
+	virtual bool NewCam(astring strIP, astring strPort, 
+			astring strModel, astring strONVIFAddr)
+	{
+		std::lock_guard<std::mutex> guard(m_lock);
+		return m_pNotify.NewCam(strIP, strPort, strModel, strONVIFAddr);
+	}
+	bool Start()
+	{
+		if (m_bStarted == true)
+		{
+			return true;
+		}
+		std::vector<std::string> ipList = OnvifDisClient::GetInterfaces();
+		if (ipList.size() <= 0)
+		{
+			printf("No network adaptor found !!!\n");
+			return false;
+		}
+		std::vector<std::string>::iterator it;
+		for (it = ipList.begin(); it != ipList.end(); ++it)
+		{
+			printf("Network %s\n", (*it).c_str());
+
+			m_map[*it] = new OnvifDisClient(*it, *this);
+			m_map[*it]->Start();
+		}
+		
+		return true;
+	}
+	bool Stop()
+	{
+		if (m_bStarted == false)
+		{
+			return true;
+		}
+		OnvifDisClientMap::iterator it = m_map.begin(); 
+		for(; it!=m_map.end(); ++it)
+		{
+			delete (*it).second;
+		}
+		m_map.clear();
+		
+		return true;
+	}
+		
+private:
+	bool m_bStarted;
+	std::mutex m_lock;
+	CamSearchNotify &m_pNotify;
+	OnvifDisClientMap m_map;
 };
 
 
