@@ -1,0 +1,86 @@
+ LibreSSL Portable Development Notes
+
+Quick start:
+
+  * First, set LIBRESSL_GIT to point to where you want to check out the code from.
+    If you are logged into cvs.openbsd.org, you can use direct file access:
+      export LIBRESSL_GIT=/cvs.b/libressl
+
+    To check out the repository over ssh from cvs.openbsd.org
+      export LIBRESSL_GIT=user@cvs.openbsd.org:/cvs.b/libressl
+
+    If you are checking out the read-only mirror from github, you can just
+    follow the instructions there.
+
+  * Next, clone the repository and build it (it builds fine on OpenBSD):
+      git clone $LIBRESSL_GIT/portable libressl
+      cd libressl
+      ./autogen.sh
+      ./configure
+      make check
+
+Layout:
+
+ The project consists of two git repositories and some helper scripts:
+
+ /cvs.b/libressl/portable is the portable build framework repository
+ /cvs.b/libressl/openbsd is a partial mirror of the OpenBSD CVS source tree.
+ /cvs.b/libressl/update.sh updates the OpenBSD mirror from CVS to git
+ /cvs.b/libressl/github.sh mirrors portable and openbsd repositories to
+                           http://github.com/libressl-portable
+
+Scripts in the portable build framework:
+
+  * The 'update.sh' script copies files from the openbsd repository into their
+    appropriate locations for the portable build to find them, as well as
+    generating automake files with the file lists to build.
+
+  * The 'autogen.sh' script runs the 'update.sh' script and runs
+    automake/autoconf to generate a ready-to-build project.
+
+  * The 'dist.sh' script runs the 'autogen.sh' script and generates a
+    distribution-ready tarball of the LibreSSL portable project.
+
+To make and test changes:
+
+  * If you are changing files in the 'portable' repository, it is easy.
+	 1. change the required files
+	 2. if you have built previously, run 'make check' and things will
+	    automatically rebuild and run the unit tests.
+     3. 'git commit' to commit your patch to your clone
+	 4. send review with 'git send-email', and/or 'git push' to the repository
+
+  * If you are changing files in the 'openbsd' repository, it is a little more
+    complicated. Here is what works for me:
+	 1. make the change locally in the local openbsd clone
+	 2. run 'update.sh' or 'autogen.sh' to copy the file into place.
+	 3. run 'make check' to test
+	 4. if the patch is good, either:
+	    a. run 'git diff' to extract the patch, apply it to your CVS tree, or:
+		b. 'git commit' commit to your local openbsd clone and:
+		   use 'git send-email <hash>' to generate a patch for review
+		   use 'git show -a <hash>' to generate a patch to apply to CVS
+	 5. if the patch is good, commit to CVS
+     6. after your code is in CVS, resync the upstream openbsd git mirror
+	    run /cvs.b/libressl/update.sh, wait 10-12 minutes for the sync to complete
+	 7. remove your local openbsd clone, or
+	    reset your local openbsd clone with 'git reset --hard origin/master'
+	 8. run 'autogen.sh' again to checkout the latest openbsd clone and move
+	    the openbsd files back into place
+
+Maintenance:
+
+  * Periodically run /cvs.b/libressl/update.sh on cvs.openbsd.org to sync the
+    openbsd mirror with the CVS tree.
+  * Running /cvs.b/libressl/github.sh requires that you register a public SSH
+    key with github first before you can upload.
+
+Publishing a new release:
+
+  * Edit the number in the VERSION file to the correct version
+  * Edit the branch in the OPENBSD_BRANCH file to point to the correct branch
+  * Check in and push the changes
+  * run './dist.sh' to checkout the desired openbsd branch and generate a
+     distribution tarball.
+  * test the tarball on all target platforms
+  * Sign and copy the tarball and signify files to /home/libressl

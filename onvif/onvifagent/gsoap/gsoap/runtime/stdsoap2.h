@@ -631,7 +631,7 @@ A commercial use license is available from Genivia, Inc., contact@genivia.com
 #  define SOAP_GAI_STRERROR gai_strerrorA
 # else
 #  ifndef __BORLANDC__
-#   include <winsock.h> /* Visual Studio 2005 users: you must install the Platform SDK (R2) */
+#   include <winsock2.h> /* Visual Studio 2005 users: you must install the Platform SDK (R2) */
 /* # include <winsock2.h> */ /* Alternative: use winsock2 (not available with eVC), enable this line and comment out the line above */
 #  else
 #   include <winsock2.h> /* Borland C */

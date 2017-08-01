@@ -74,13 +74,26 @@ set(tests_protos
 macro(compile_proto_file filename)
   get_filename_component(dirname ${filename} PATH)
   get_filename_component(basename ${filename} NAME_WE)
-  add_custom_command(
-    OUTPUT ${protobuf_source_dir}/src/${dirname}/${basename}.pb.cc
-    DEPENDS protoc ${protobuf_source_dir}/src/${dirname}/${basename}.proto
-    COMMAND protoc ${protobuf_source_dir}/src/${dirname}/${basename}.proto
-        --proto_path=${protobuf_source_dir}/src
-        --cpp_out=${protobuf_source_dir}/src
-  )
+  if (CMAKE_CROSSCOMPILING)
+	if(NOT DEFINED protobuf_PROTOC_HOST_LOCATION)
+		message (FATAL_ERROR "Cross compiling require setting protobuf_PROTOC_HOST_LOCATION.")
+	endif(NOT DEFINED protobuf_PROTOC_HOST_LOCATION)
+	add_custom_command(
+		OUTPUT ${protobuf_source_dir}/src/${dirname}/${basename}.pb.cc
+		DEPENDS ${protobuf_source_dir}/src/${dirname}/${basename}.proto
+		COMMAND ${protobuf_PROTOC_HOST_LOCATION} ${protobuf_source_dir}/src/${dirname}/${basename}.proto
+			--proto_path=${protobuf_source_dir}/src
+			--cpp_out=${protobuf_source_dir}/src
+	)
+  else(CMAKE_CROSSCOMPILING)
+	add_custom_command(
+		OUTPUT ${protobuf_source_dir}/src/${dirname}/${basename}.pb.cc
+		DEPENDS protoc ${protobuf_source_dir}/src/${dirname}/${basename}.proto
+		COMMAND protoc ${protobuf_source_dir}/src/${dirname}/${basename}.proto
+			--proto_path=${protobuf_source_dir}/src
+			--cpp_out=${protobuf_source_dir}/src
+	)
+  endif(CMAKE_CROSSCOMPILING)
 endmacro(compile_proto_file)
 
 set(lite_test_proto_files)
@@ -212,7 +225,7 @@ set(lite_arena_test_files
 add_executable(lite-arena-test ${lite_arena_test_files} ${common_lite_test_files} ${lite_test_proto_files})
 target_link_libraries(lite-arena-test libprotobuf-lite gmock_main)
 
-add_custom_target(check
+add_custom_target(check_protobuf
   COMMAND tests
   DEPENDS tests test_plugin
   WORKING_DIRECTORY ${protobuf_source_dir})

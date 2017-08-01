@@ -100,11 +100,22 @@ set(js_well_known_types_sources,
   ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types/timestamp.js
 )
 add_executable(js_embed ${protobuf_source_dir}/src/google/protobuf/compiler/js/embed.cc)
-add_custom_command(
-  OUTPUT ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types_embed.cc
-  DEPENDS js_embed ${js_well_known_types_sources}
-  COMMAND js_embed ${js_well_known_types_sources} > ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types_embed.cc
-)
+if (CMAKE_CROSSCOMPILING)
+	if (NOT DEFINED js_embed_HOST)
+		message(FATAL_ERROR "Cross compiling require setting js_embed_HOST.")
+	endif(NOT DEFINED js_embed_HOST)
+	add_custom_command(
+		OUTPUT ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types_embed.cc
+		DEPENDS ${js_well_known_types_sources}
+		COMMAND ${js_embed_HOST} ${js_well_known_types_sources} > ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types_embed.cc
+	)
+else(CMAKE_CROSSCOMPILING)
+	add_custom_command(
+		OUTPUT ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types_embed.cc
+		DEPENDS js_embed ${js_well_known_types_sources}
+		COMMAND ${CMAKE_CURRENT_BINARY_DIR}/js_embed ${js_well_known_types_sources} > ${protobuf_source_dir}/src/google/protobuf/compiler/js/well_known_types_embed.cc
+	)
+endif(CMAKE_CROSSCOMPILING)
 
 add_library(libprotoc ${protobuf_SHARED_OR_STATIC}
   ${libprotoc_files})
