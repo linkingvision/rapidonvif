@@ -74,8 +74,14 @@ target_link_libraries(onvifagent
 
 set(example_srcs "example/example.cpp" "example/example.hpp")
 file(GLOB_RECURSE ipc_video_srcs "include/*.cpp" "include/*.cc" "include/*.h" "include/*.hpp")
-	
-add_executable(onvifagentcli ${example_srcs} ${ipc_video_srcs} ${civetweb_embedded_src})
+
+if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	set(cli_main_srcs "src/onvifagentlib.cpp" "src/tinyprocess/process.cpp" "src/tinyprocess/process_win.cpp")
+else(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	set(cli_main_srcs "src/onvifagentlib.cpp" "src/tinyprocess/process.cpp" "src/tinyprocess/process_unix.cpp")
+endif(CMAKE_SYSTEM_NAME MATCHES "Windows")
+
+add_executable(onvifagentcli ${example_srcs} ${ipc_video_srcs} ${civetweb_embedded_src} ${cli_main_srcs})
 set_property(TARGET onvifagentcli PROPERTY CXX_STANDARD 11)
 
 target_compile_definitions(onvifagentcli PRIVATE "WITH_OPENSSL" "USE_IPV6" "USE_WEBSOCKET" "WITH_DOM" "WITH_PURE_VIRTUAL")
