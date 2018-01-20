@@ -1,4 +1,0 @@
-curl 7.43.0
-openssl 1.0.2k
-protobuf protobuf-cpp-3.2.0
-civetweb 1.8
