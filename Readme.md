@@ -1,4 +1,4 @@
-# If you want onvif library without GSOAP, or you want iOS & Android version mail to info@linkingvision.com #
+# If you want onvif library without GSOAP, or you want iOS & Android onvif library mail to info@linkingvision.com #
 Gsoap based ONVIF C++ lib: 
 including server and client, support ProfileS and ProfileG, support Event.
 This lib will be used by http://sourceforge.net/projects/onvifmanager/
