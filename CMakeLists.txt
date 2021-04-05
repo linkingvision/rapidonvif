@@ -19,15 +19,6 @@ set_target_properties(onvifclientdevice PROPERTIES LINKER_LANGUAGE CXX)
 add_library(onvifclientreceiver SHARED include/onvifclientreceiver.hpp)
 set_target_properties(onvifclientreceiver PROPERTIES LINKER_LANGUAGE CXX)
 
-add_library(onvifserver SHARED include/onvifserver.hpp)
-set_target_properties(onvifserver PROPERTIES LINKER_LANGUAGE CXX)
-
-add_library(onvifserverdevice SHARED include/onvifserverdevice.hpp)
-set_target_properties(onvifserverdevice PROPERTIES LINKER_LANGUAGE CXX)
-
-add_library(onvifserverevent SHARED include/onvifserverevent.hpp)
-set_target_properties(onvifserverevent PROPERTIES LINKER_LANGUAGE CXX)
-
 add_library(onvifclientevent SHARED include/onvifclientevent.hpp)
 set_target_properties(onvifclientevent PROPERTIES LINKER_LANGUAGE CXX)
 
@@ -45,3 +36,15 @@ set_target_properties(onvifclientmedia PROPERTIES LINKER_LANGUAGE CXX)
 
 add_library(onvifclientreplay SHARED include/onvifclientreplay.hpp)
 set_target_properties(onvifclientreplay PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifserver SHARED include/onvifserver.hpp)
+set_target_properties(onvifserver PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifserverdevice SHARED include/onvifserverdevice.hpp)
+set_target_properties(onvifserverdevice PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifserverevent SHARED include/onvifserverevent.hpp)
+set_target_properties(onvifserverevent PROPERTIES LINKER_LANGUAGE CXX)
+
+
+install(TARGETS onvifclient onvifclientptz onvifclientsearch onvifclientdevice onvifclientreceiver onvifclientevent onvifclientrecording onvifclientimaging onvifclientremotediscovery onvifclientmedia onvifclientreplay onvifserver onvifserverdevice onvifserverevent DESTINATION /usr/local/onvif)
