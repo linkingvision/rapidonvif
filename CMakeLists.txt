@@ -1,0 +1,50 @@
+cmake_minimum_required(VERSION 2.8)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include_directories(include onvifgen)
+
+add_library(onvifclient SHARED include/onvifclient.hpp)
+set_target_properties(onvifclient PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifclientptz SHARED include/onvifclientptz.hpp)
+set_target_properties(onvifclientptz PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifclientsearch SHARED include/onvifclientsearch.hpp)
+set_target_properties(onvifclientsearch PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifclientdevice SHARED include/onvifclientdevice.hpp)
+set_target_properties(onvifclientdevice PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifclientreceiver SHARED include/onvifclientreceiver.hpp)
+set_target_properties(onvifclientreceiver PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifclientevent SHARED include/onvifclientevent.hpp)
+set_target_properties(onvifclientevent PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifclientrecording SHARED include/onvifclientrecording.hpp)
+set_target_properties(onvifclientrecording PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifclientimaging SHARED include/onvifclientimaging.hpp)
+set_target_properties(onvifclientimaging PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifclientremotediscovery SHARED include/onvifclientremotediscovery.hpp)
+set_target_properties(onvifclientremotediscovery PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifclientmedia SHARED include/onvifclientmedia.hpp)
+set_target_properties(onvifclientmedia PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifclientreplay SHARED include/onvifclientreplay.hpp)
+set_target_properties(onvifclientreplay PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifserver SHARED include/onvifserver.hpp)
+set_target_properties(onvifserver PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifserverdevice SHARED include/onvifserverdevice.hpp)
+set_target_properties(onvifserverdevice PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(onvifserverevent SHARED include/onvifserverevent.hpp)
+set_target_properties(onvifserverevent PROPERTIES LINKER_LANGUAGE CXX)
+
+
+install(TARGETS onvifclient onvifclientptz onvifclientsearch onvifclientdevice onvifclientreceiver onvifclientevent onvifclientrecording onvifclientimaging onvifclientremotediscovery onvifclientmedia onvifclientreplay onvifserver onvifserverdevice onvifserverevent DESTINATION /usr/local/onvif)
